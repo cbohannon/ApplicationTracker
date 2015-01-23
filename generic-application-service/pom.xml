@@ -136,7 +136,7 @@
                         <url>jdbc:mysql://localhost:3306/</url>
                         <!-- Use your username and password -->
                         <user>root</user>
-                        <password>root</password>
+                        <password></password>
                     </jdbc>
                     <!-- Generator parameters -->
                     <generator>
