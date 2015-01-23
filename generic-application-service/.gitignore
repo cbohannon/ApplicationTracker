@@ -6,3 +6,6 @@
 # Maven
 log/
 target/
+
+# Jooq
+src/main/java/com/jooq
