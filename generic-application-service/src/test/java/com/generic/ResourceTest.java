@@ -2,7 +2,9 @@ package com.generic;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.StatusType;
 
 import org.glassfish.grizzly.http.server.HttpServer;
@@ -55,8 +57,23 @@ public class ResourceTest {
                                                "This is some test data.\"}"));
     }
 
+    @Test
+    public void testPostNewApplicationResponse400() {
+        StatusType statusType = target.path("applications").request(MediaType.APPLICATION_JSON_TYPE)
+                                                           .post(Entity.json("")).getStatusInfo();
+        assertThat(statusType.getStatusCode(), is(400));
+    }
+
+    @Test
+    public void testPostNewApplicationData() {
+        StatusType statusType = target.path("applications").request(MediaType.APPLICATION_JSON_TYPE)
+                                                           .post(Entity.json(Main.jsonInput)).getStatusInfo();
+        assertThat(statusType.getStatusCode(), is(204));
+    }
+
     @After
     public void tearDown() throws Exception {
+        // TODO: I need to delete any test records at tear down
         server.shutdownNow();
     }
 }

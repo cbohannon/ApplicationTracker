@@ -16,15 +16,14 @@ import org.slf4j.LoggerFactory;
 
 public class Main {
     protected static final String BASE_URI = "http://localhost:80/rest/";
-    private static final Logger logger = LoggerFactory.getLogger(Main.class);
-
-    private static InputStream inputStream = null;
+    protected static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     protected static String dbUrl;
     protected static String dbName;
     protected static String dbDriver;
     protected static String dbUsername;
     protected static String dbPassword;
+    protected static String jsonInput;
 
     public static HttpServer startServer() {
         final ResourceConfig rc = new ResourceConfig().packages("com.generic");
@@ -32,7 +31,7 @@ public class Main {
     }
 
     public static void GetProperties() throws IOException {
-        inputStream = Main.class.getClassLoader().getResourceAsStream("config.properties");
+        InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("config.properties");
         Properties properties = new Properties();
 
         try {
@@ -42,6 +41,7 @@ public class Main {
             dbName = properties.getProperty("db.name");
             dbUsername = properties.getProperty("db.username");
             dbPassword = properties.getProperty("db.password");
+            jsonInput = properties.getProperty("json.junit");
         } finally {
             if (inputStream != null) {
                 inputStream.close();
