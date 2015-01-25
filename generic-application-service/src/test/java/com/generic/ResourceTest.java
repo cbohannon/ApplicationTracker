@@ -3,13 +3,17 @@ package com.generic;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response.StatusType;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 
 public class ResourceTest {
 
@@ -18,31 +22,41 @@ public class ResourceTest {
 
     @Before
     public void setUp() throws Exception {
-        // start the server
+        // Start the server
         server = Main.startServer();
-        // create the client
+        // Get the properties
+        Main.GetProperties();
+        // Create the client
         Client c = ClientBuilder.newClient();
 
-        // uncomment the following line if you want to enable
-        // support for JSON in the client (you also have to uncomment
-        // dependency on jersey-media-json module in pom.xml and Main.startServer())
-        // --
-        // c.configuration().enable(new org.glassfish.jersey.media.json.JsonJaxbFeature());
-
         target = c.target(Main.BASE_URI);
+    }
+
+    @Test
+    public void testGetAllApplicationsStatusCode200() {
+        StatusType statusType = target.path("applications").request().get().getStatusInfo();
+        assertThat(statusType.getStatusCode(), is(200));
+    }
+
+    @Test
+    public void testGetAllApplicationsStatusCode404() {
+        StatusType statusType = target.path("XapplicationsX").request().get().getStatusInfo();
+        assertThat(statusType.getStatusCode(), is(404));
+    }
+
+    @Test
+    public void testGetAllApplicationsData() {
+        String responseMsg = target.path("applications").request().get(String.class);
+        // I am really only checking to make sure test data is present
+        assertThat(responseMsg, containsString("{\"company\":\"Test Company\",\"position\":\"Some Position\"" +
+                                               ",\"location\":\"Location\",\"dateApplied\":\"2015-01-01\",\"" +
+                                               "contactName\":\"Unknown\",\"contactMethod\":\"Company Website\"" +
+                                               ",\"contactedMeFirst\":\"Yes\",\"status\":\"Open\",\"notes\":\"" +
+                                               "This is some test data.\"}"));
     }
 
     @After
     public void tearDown() throws Exception {
         server.shutdownNow();
-    }
-
-    /**
-     * Test to see that the message "Got it!" is sent in the response.
-     */
-    @Test
-    public void testGetIt() {
-        String responseMsg = target.path("myresource").request().get(String.class);
-        assertEquals("Got it!", responseMsg);
     }
 }

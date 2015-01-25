@@ -1,10 +1,9 @@
 package com.generic;
 
-import java.io.IOException;
-
 import org.glassfish.grizzly.http.server.CLStaticHttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Properties;
@@ -12,13 +11,42 @@ import java.util.Properties;
 import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Main {
-    public static final String BASE_URI = "http://localhost:80/rest/";
+    protected static final String BASE_URI = "http://localhost:80/rest/";
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+
+    private static InputStream inputStream = null;
+
+    protected static String dbUrl;
+    protected static String dbName;
+    protected static String dbDriver;
+    protected static String dbUsername;
+    protected static String dbPassword;
 
     public static HttpServer startServer() {
         final ResourceConfig rc = new ResourceConfig().packages("com.generic");
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
+    }
+
+    public static void GetProperties() throws IOException {
+        inputStream = Main.class.getClassLoader().getResourceAsStream("config.properties");
+        Properties properties = new Properties();
+
+        try {
+            properties.load(inputStream);
+            dbDriver = properties.getProperty("db.driver");
+            dbUrl = properties.getProperty("db.url");
+            dbName = properties.getProperty("db.name");
+            dbUsername = properties.getProperty("db.username");
+            dbPassword = properties.getProperty("db.password");
+        } finally {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+        }
     }
 
     public static void main(String[] args) throws IOException {
@@ -28,25 +56,20 @@ public class Main {
         NetworkListener listener = new NetworkListener(BASE_URI);
         httpServer.addListener(listener);
 
-        InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("config.properties");
-        Properties properties = new Properties();
-
+        GetProperties();
         try {
             httpServer.start();
-            properties.load(inputStream);
 
-            System.out.println("Database Driver: " + properties.getProperty("db.driver"));
-            System.out.println("Database URL: " + properties.getProperty("db.url"));
-            System.out.println("Database Name: " + properties.getProperty("db.name") + "\n");
-            System.out.println(String.format("Jersey app started with WADL available at " + "%sapplication.wadl", BASE_URI));
-            System.out.println("Jersey app started with base URI at " + BASE_URI);
-            System.out.println("Hit enter to stop the app...");
+            logger.info("Database Driver: {}", dbDriver);
+            logger.info("Database URL: {}", dbUrl);
+            logger.info("Database Name: {}", dbName);
 
-            System.out.println(System.in.read() + " bytes read.");
+            logger.info(String.format("Jersey app started with WADL available at " + "%sapplication.wadl", BASE_URI));
+            logger.info("Jersey app started with base URI at " + BASE_URI);
+            logger.info("Hit enter to stop the app...");
+
+            logger.info(System.in.read() + " bytes read.");
         } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
             listener.shutdownNow();
             httpServer.shutdownNow();
         }
