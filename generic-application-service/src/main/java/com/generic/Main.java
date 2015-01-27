@@ -23,7 +23,8 @@ public class Main {
     protected static String dbDriver;
     protected static String dbUsername;
     protected static String dbPassword;
-    protected static String jsonInput;
+    protected static String jsonInputPost;
+    protected static String jsonInputDelete;
 
     public static HttpServer startServer() {
         final ResourceConfig rc = new ResourceConfig().packages("com.generic");
@@ -41,7 +42,8 @@ public class Main {
             dbName = properties.getProperty("db.name");
             dbUsername = properties.getProperty("db.username");
             dbPassword = properties.getProperty("db.password");
-            jsonInput = properties.getProperty("json.junit");
+            jsonInputPost = properties.getProperty("json.junit.post");
+            jsonInputDelete = properties.getProperty("json.junit.delete");
         } finally {
             if (inputStream != null) {
                 inputStream.close();
