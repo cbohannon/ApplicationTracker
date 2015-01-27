@@ -1,7 +1,6 @@
 package com.generic;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -173,6 +172,11 @@ public class Resource {
         }
 
         return Response.status(204).build();
+    }
+
+    @PUT
+    public Response updateApplication(String jsonRequest) {
+        return Response.status(501).build();
     }
 
     private class Application {
