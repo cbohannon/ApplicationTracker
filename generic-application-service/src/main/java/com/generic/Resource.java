@@ -76,7 +76,7 @@ public class Resource {
         for (int index = 0; index < jsonArray.size(); index ++) {
             JsonObject jsonObject = jsonArray.get(index).getAsJsonObject();
 
-            String key = jsonObject.get("key").getAsString();
+            String key = jsonObject.get("name").getAsString();
             String value = jsonObject.get("value").getAsString();
             Main.logger.debug("jsonObject Key: {}, jsonObject Value: {}", key, value);
 
@@ -126,7 +126,7 @@ public class Resource {
         for (int index = 0; index < jsonArray.size(); index ++) {
             JsonObject jsonObject = jsonArray.get(index).getAsJsonObject();
 
-            String key = jsonObject.get("key").getAsString();
+            String key = jsonObject.get("name").getAsString();
             String value = jsonObject.get("value").getAsString();
             Main.logger.debug("jsonObject Key: {}, jsonObject Value: {}", key, value);
 
@@ -147,7 +147,8 @@ public class Resource {
                                                                 .and(INFORMATION.CONTACTMETHOD.equal(queryBuilder.get(5)))
                                                                 .and(INFORMATION.CONTACTEDMEFIRST.equal(queryBuilder.get(6)))
                                                                 .and(INFORMATION.STATUS.equal(queryBuilder.get(7)))
-                                                                .and(INFORMATION.NOTES.equal(queryBuilder.get(8))).fetch();
+                                                                .and(INFORMATION.NOTES.equal(queryBuilder.get(8)))
+                                                                .fetch();
 
             // The result could return more than 1 line item of test data but we only care about deleting one of them
             if (fetchedRecord.size() >= 1) {
@@ -159,7 +160,8 @@ public class Resource {
                                                           .and(INFORMATION.CONTACTMETHOD.equal(queryBuilder.get(5)))
                                                           .and(INFORMATION.CONTACTEDMEFIRST.equal(queryBuilder.get(6)))
                                                           .and(INFORMATION.STATUS.equal(queryBuilder.get(7)))
-                                                          .and(INFORMATION.NOTES.equal(queryBuilder.get(8))).execute();
+                                                          .and(INFORMATION.NOTES.equal(queryBuilder.get(8)))
+                                                          .execute();
                 if (value == 1) {
                     Main.logger.info("Successful record deletion: {}.", value);
                 }

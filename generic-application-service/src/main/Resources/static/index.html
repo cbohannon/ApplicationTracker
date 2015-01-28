@@ -3,8 +3,84 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+
+        <link rel="stylesheet" type="text/css" href="css/index.css" media="screen" />
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script src="javascript/index.js"></script>
+
+        <title>Employment Opportunity Tracker</title>
     </head>
     <body>
-        HTML
+        <header>
+            <span>Employment Opportunity Tracker</span>
+        </header>
+        <main>
+            <section>
+                <form method="post" id="frmInput">
+                    <div>
+                        <label>Company</label> <input type="text" required name="company" class="large" placeholder="Company Name" />
+                    </div>
+                    <div>
+                        <label>Position</label> <input type="text" required name="position" class="large" placeholder="Position or Title" />
+                    </div>
+                    <div>
+                        <label>Location</label> <input type="text" required name="location" class="large" placeholder="Location" />
+                    </div>
+                    <div>
+                        <label>Date Applied</label> <input type="date" required name="dateApplied" class="large" placeholder="2015-01-01" />
+                    </div>
+                    <div>
+                        <label>Contact Name</label> <input type="text" required name="contactName" class="large" placeholder="A Contact Name" />
+                    </div>
+                    <div>
+                        <label>Contact Method</label> <input type="text" required name="contactMethod" class="large" placeholder="A Contact Method" />
+                    </div>
+                    <div>
+                        <label>Contacted Me First</label> <select name="contactedMeFirst" title="contactedMeFirst">
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Status</label>  <select name="status" title="status">
+                            <option value="Open">Open</option>
+                            <option value="Closed">Closed</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Notes</label> <input type="text" required name="notes" class="large" placeholder="Enter some general notes." />
+                    </div>
+                    <div>
+                        <button type="button" name="submit" id="btnSubmitApplication">Submit</button>
+                        <button type="button" name="clear" id="btnClearApplication">Clear</button>
+                    </div>
+                </form>
+            </section>
+            <section>
+                <table id="tblApplications">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Position</th>
+                            <th>Location</th>
+                            <th>Date Applied</th>
+                            <th>Contact Name</th>
+                            <th>Method</th>
+                            <th>Contacted Me First</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr></tr>
+                    </tbody>
+                </table>
+                <button type="button" name="Retrieve" id="btnGetApplications">Retrieve</button>
+            </section>
+        </main>
+        <footer>
+            <span></span>
+        </footer>
     </body>
 </html>
