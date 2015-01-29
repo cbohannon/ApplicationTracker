@@ -4,6 +4,7 @@ A simple tracking system for employment inquiries
 Currently using a MySQL database called applications.
 
 The table is called information.
+
 +------------------------+
 | Tables_in_applications |
 +------------------------+
@@ -11,6 +12,7 @@ The table is called information.
 +------------------------+
 
 Here are the columns.
+
 +------------------+--------------+------+-----+---------+-------+
 | Field            | Type         | Null | Key | Default | Extra |
 +------------------+--------------+------+-----+---------+-------+
