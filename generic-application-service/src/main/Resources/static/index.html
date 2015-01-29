@@ -16,7 +16,7 @@
             <span>Employment Opportunity Tracker</span>
         </header>
         <main>
-            <section>
+            <section id="applicationCreation" class="not">
                 <form method="post" id="frmInput">
                     <div>
                         <label>Company</label> <input type="text" required name="company" class="large" placeholder="Company Name" />
@@ -37,24 +37,25 @@
                         <label>Contact Method</label> <input type="text" required name="contactMethod" class="large" placeholder="A Contact Method" />
                     </div>
                     <div>
-                        <label>Contacted Me First</label> <select name="contactedMeFirst" title="contactedMeFirst">
+                        <label>Initiated First Contact</label> <select name="contactedMeFirst" title="contactedMeFirst">
                             <option value="Yes">Yes</option>
                             <option value="No">No</option>
                         </select>
                     </div>
                     <div>
-                        <label>Status</label>  <select name="status" title="status">
+                        <label>Current Status</label>  <select name="status" title="status">
                             <option value="Open">Open</option>
                             <option value="Closed">Closed</option>
                         </select>
                     </div>
                     <div>
-                        <label>Notes</label> <input type="text" required name="notes" class="large" placeholder="Enter some general notes." />
+                        <label>Notes (Currently not being displayed.)</label>
+                        <input type="text" required name="notes" class="large" placeholder="Enter some general notes." />
                     </div>
-                    <div>
+                    <nav>
                         <button type="button" name="submit" id="btnSubmitApplication">Submit</button>
                         <button type="button" name="clear" id="btnClearApplication">Clear</button>
-                    </div>
+                    </nav>
                 </form>
             </section>
             <section>
@@ -67,19 +68,35 @@
                             <th>Date Applied</th>
                             <th>Contact Name</th>
                             <th>Method</th>
-                            <th>Contacted Me First</th>
+                            <th>Initiated First</th>
                             <th>Status</th>
-                            <th>Notes</th>
+                            <th>Notes</th> <!-- TODO: Adjust how notes gets displayed on the page -->
                         </tr>
                     </thead>
                     <tbody>
-                        <tr></tr>
+                    <!--
+                    <tr>
+                        <td>A Test Company</td>
+                        <td>A Test Position</td>
+                        <td>A Test Location</td>
+                        <td>2015-01-31</td>
+                        <td>A Test Name</td>
+                        <td>Company Website</td>
+                        <td>Yes</td>
+                        <td>Open</td>
+                        <td>Currently not displaying notes.</td>
+                    </tr>
+                    -->
                     </tbody>
                 </table>
-                <button type="button" name="Retrieve" id="btnGetApplications">Retrieve</button>
+                <nav>
+                    <button type="button" name="retrieve" id="btnGetApplications">Retrieve</button>
+                    <button type="button" name="add" id="btnAddApplication">Add</button>
+                </nav>
             </section>
         </main>
         <footer>
+            <!-- TODO: Maybe add a status message after "Submit" and "Retrieve" -->
             <span></span>
         </footer>
     </body>

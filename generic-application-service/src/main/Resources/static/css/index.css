@@ -54,13 +54,14 @@ thead th {
     color: #fff;
     font-size: 12px;
     font-weight: bold;
-    text-align:center;
+    text-align: center;
 }
 
 td {
     font-size: 11px;
     line-height: 25px;
     padding-left: 10px;
+    text-align: left;
 }
 
 .even {
@@ -83,7 +84,7 @@ nav a {
     text-decoration: none;
     border: 1px solid #5b5b5b;
     font-size: 13px;
-    text-align:  center;
+    text-align: center;
     padding:5px 10px;
 }
 

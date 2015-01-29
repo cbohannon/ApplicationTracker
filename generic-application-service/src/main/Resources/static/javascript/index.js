@@ -13,6 +13,11 @@ $(document).ready(function() {
         evt.preventDefault();
         $().retrieveApplications();
     });
+
+    $("#btnAddApplication").click(function(evt) {
+        evt.preventDefault();
+        $().addApplication();
+    });
 });
 
 (function ($) {
@@ -24,13 +29,29 @@ $(document).ready(function() {
                 url: "http://localhost:80/rest/applications",
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(jsonArray),
-                dataType: "json"
+                dataType: "json",
+                success: function(data) {
+                    console.log(data);
+                }
             })
         },
         clearForm: function() {
-            console.log("Clear was clicked.");
+            $("[name=company]").val("");
+            $("[name=position]").val("");
+            $("[name=location]").val("");
+            $("[name=dateApplied]").val("");
+            $("[name=contactName]").val("");
+            $("[name=contactMethod]").val("");
+            $("[name=contactedMeFirst]").prop("selectedIndex", 0);
+            $("[name=status]").prop("selectedIndex", 0);
+            $("[name=notes]").val("");
+        },
+        addApplication: function () {
+            $("#applicationCreation").removeClass("not");
+            $("#btnAddApplication").attr("disabled", true);
         },
         retrieveApplications: function() {
+            // TODO: Clear / remove previously appended rows
             $.get("http://localhost:80/rest/applications", function (data, status) {
                 $.each(data, function (outerKey, outerObject) {
                     var row = $("<tr>");
@@ -61,7 +82,9 @@ $(document).ready(function() {
                                 row.append($("<td>").text(innerObject.toString()));
                                 break;
                             case "notes":
-                                row.append($("<td>").text(innerObject.toString()));
+                                // TODO: Adjust how notes gets displayed on the page
+                                // row.append($("<td>").text(innerObject.toString()));
+                                row.append($("<td>").text("Currently not displaying notes."));
                                 break;
                             default:
                                 console.log("Error iterating over innerObject: " + innerKey + " " + innerObject);
