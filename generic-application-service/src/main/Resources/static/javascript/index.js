@@ -33,38 +33,40 @@ $(document).ready(function() {
                 dataType: "json",
                 cache: false,
                 success: function(data) {
+                    $("#footerMessage").find("span").remove();
                     $("<span>Success! Data submitted.</span>").appendTo("#footerMessage");
                     console.log("Success! Data submitted: " + data);
                 },
                 error: function(jqXHR) {
+                    $("#footerMessage").find("span").remove();
                     $("<span>It looks like we had an error.</span>").appendTo("#footerMessage");
                     console.log("Error message: " + jqXHR.statusText +" code " + jqXHR.status);
                 }
             });
-            $().clearForm();
+            setTimeout(function() {
+                $().clearForm();
+            }, 500);
         },
         clearForm: function() {
-            $("[name=company]").val("");
-            $("[name=position]").val("");
-            $("[name=location]").val("");
-            $("[name=dateApplied]").val("");
-            $("[name=contactName]").val("");
-            $("[name=contactMethod]").val("");
+            $("[name=company]").val("Company Name");
+            $("[name=position]").val("Position or Title");
+            $("[name=location]").val("Location");
+            $("[name=dateApplied]").val("2015-01-01");
+            $("[name=contactName]").val("A Contact Name");
+            $("[name=contactMethod]").val("A Contact Method");
             $("[name=contactedMeFirst]").prop("selectedIndex", 0);
             $("[name=status]").prop("selectedIndex", 0);
-            $("[name=notes]").val("");
+            $("[name=notes]").val("Enter some general notes.");
         },
         addApplication: function () {
             $("#applicationCreation").removeClass("not");
-            $("#btnAddApplication").attr("disabled", true);
         },
         removeRows: function() {
-            // Remove previously appended rows before executing the GET
+            // Remove previously appended rows before executing the GET and to remove the rows we'll look for <td>
             var tblObject = $("#tblApplications");
             if (tblObject.find("td").length > 0) {
                 tblObject.find("td").remove();
                 tblObject.find("input").remove();
-                // Clear the footer out as well
                 $("#footerMessage").find("span").remove();
             }
         },
@@ -109,7 +111,7 @@ $(document).ready(function() {
                                 case "notes":
                                     // TODO: Adjust how notes gets displayed on the page
                                     // row.append($("<td>").text(innerObject.toString()));
-                                    row.append($("<td>").text("Currently not displaying notes."));
+                                    // row.append($("<td>").text("Currently not displaying notes."));
                                     break;
                                 default:
                                     console.log("Error iterating over innerObject: " + innerKey + " " + innerObject);
@@ -119,11 +121,15 @@ $(document).ready(function() {
                         btnEdit.appendTo(row);
                         var btnDelete = $('<input type="button" name="btnDelete" value="Delete" />');
                         btnDelete.appendTo(row);
+                        var btnNotes = $('<input type="button" name="btnNotes" value="Notes" />');
+                        btnNotes.appendTo(row);
                         $("#tblApplications").append(row);
                     });
+                    $("#footerMessage").find("span").remove();
                     $("<span>Success! Data retrieved.</span>").appendTo("#footerMessage");
                 },
                 error: function(jqXHR) {
+                    $("#footerMessage").find("span").remove();
                     $("<span>It looks like we had an error.</span>").appendTo("#footerMessage");
                     console.log("Error message: " + jqXHR.statusText +" code " + jqXHR.status);
                 }
