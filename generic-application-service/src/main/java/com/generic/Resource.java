@@ -2,8 +2,6 @@ package com.generic;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -40,7 +38,8 @@ public class Resource {
             Result<Record> result = dslContext.select().from(INFORMATION).fetch();
 
             for (Record r : result) {
-                application.add(new Application(r.getValue("company").toString(),
+                application.add(new Application(r.getValue("id").toString(),
+                                                r.getValue("company").toString(),
                                                 r.getValue("position").toString(),
                                                 r.getValue("location").toString(),
                                                 r.getValue("dateApplied").toString(),
@@ -110,66 +109,31 @@ public class Resource {
     }
 
     @DELETE
-    public Response deleteApplication(@QueryParam("application") String jsonRequest) throws UnsupportedEncodingException {
-        if (jsonRequest.isEmpty()) {
+    public Response deleteApplication(@QueryParam("application") Integer idValue) throws SQLException {
+        if (idValue == null) {
             return Response.status(400).build();
-        }
-
-        // This is only here due to a JUnit test (testDeleteApplication)
-        String decodedJson = URLDecoder.decode(jsonRequest, "UTF-8");
-
-        JsonParser jsonParser = new JsonParser();
-        JsonArray jsonArray = jsonParser.parse(decodedJson).getAsJsonArray();
-
-        LinkedList<String> queryBuilder = new LinkedList<>();
-
-        for (int index = 0; index < jsonArray.size(); index ++) {
-            JsonObject jsonObject = jsonArray.get(index).getAsJsonObject();
-
-            String key = jsonObject.get("name").getAsString();
-            String value = jsonObject.get("value").getAsString();
-            Main.logger.debug("jsonObject Key: {}, jsonObject Value: {}", key, value);
-
-            queryBuilder.add(index, value);
         }
 
         try {
             Class.forName(Main.dbDriver).newInstance();
             Connection connection = DriverManager.getConnection(Main.dbUrl + Main.dbName, Main.dbPassword, Main.dbUsername);
             DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
+            InformationRecord fetchedRecord = dslContext.selectFrom(INFORMATION).where(INFORMATION.ID.equal(idValue)).fetchOne();
 
-            Result<InformationRecord> fetchedRecord = dslContext.selectFrom(INFORMATION)
-                                                                .where(INFORMATION.COMPANY.equal(queryBuilder.get(0)))
-                                                                .and(INFORMATION.POSITION.equal(queryBuilder.get(1)))
-                                                                .and(INFORMATION.LOCATION.equal(queryBuilder.get(2)))
-                                                                .and(INFORMATION.DATEAPPLIED.equal(Date.valueOf(queryBuilder.get(3))))
-                                                                .and(INFORMATION.CONTACTNAME.equal(queryBuilder.get(4)))
-                                                                .and(INFORMATION.CONTACTMETHOD.equal(queryBuilder.get(5)))
-                                                                .and(INFORMATION.CONTACTEDMEFIRST.equal(queryBuilder.get(6)))
-                                                                .and(INFORMATION.STATUS.equal(queryBuilder.get(7)))
-                                                                .and(INFORMATION.NOTES.equal(queryBuilder.get(8)))
-                                                                .fetch();
-
-            // The result could return more than 1 line item of test data but we only care about deleting one of them
-            if (fetchedRecord.size() >= 1) {
-                int value = dslContext.delete(INFORMATION).where(INFORMATION.COMPANY.equal(queryBuilder.get(0)))
-                                                          .and(INFORMATION.POSITION.equal(queryBuilder.get(1)))
-                                                          .and(INFORMATION.LOCATION.equal(queryBuilder.get(2)))
-                                                          .and(INFORMATION.DATEAPPLIED.equal(Date.valueOf(queryBuilder.get(3))))
-                                                          .and(INFORMATION.CONTACTNAME.equal(queryBuilder.get(4)))
-                                                          .and(INFORMATION.CONTACTMETHOD.equal(queryBuilder.get(5)))
-                                                          .and(INFORMATION.CONTACTEDMEFIRST.equal(queryBuilder.get(6)))
-                                                          .and(INFORMATION.STATUS.equal(queryBuilder.get(7)))
-                                                          .and(INFORMATION.NOTES.equal(queryBuilder.get(8)))
-                                                          .execute();
+            if (fetchedRecord == null) {
+                Main.logger.info("No record to delete.");
+                connection.close();
+                return Response.status(404).build();
+            } else {
+                int value = dslContext.delete(INFORMATION).where(INFORMATION.ID.equal(idValue)).execute();
                 if (value == 1) {
                     Main.logger.info("Successful record deletion: {}.", value);
                 }
             }
 
             connection.close();
-            fetchedRecord.clear();
-        } catch (InstantiationException | IllegalAccessException | SQLException | ClassNotFoundException e) {
+            fetchedRecord.reset();
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             e.printStackTrace();
         }
 
@@ -182,6 +146,7 @@ public class Resource {
     }
 
     private class Application {
+        String id = "";
         String company = "";
         String position = "";
         String location = "";
@@ -192,8 +157,9 @@ public class Resource {
         String status = "";
         String notes = "";
 
-        public Application(String company, String position, String location, String dateApplied, String contactName,
+        public Application(String id, String company, String position, String location, String dateApplied, String contactName,
                            String contactMethod, String contactedMeFirst, String status, String notes) {
+            this.id = id;
             this.company = company;
             this.position = position;
             this.location = location;

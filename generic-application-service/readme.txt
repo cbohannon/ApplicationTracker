@@ -28,19 +28,20 @@ The table is named information and the database is named applications.
 +------------------------+
 
 Here are the columns.
-+------------------+--------------+------+-----+---------+-------+
-| Field            | Type         | Null | Key | Default | Extra |
-+------------------+--------------+------+-----+---------+-------+
-| company          | varchar(50)  | YES  |     | NULL    |       |
-| position         | varchar(128) | YES  |     | NULL    |       |
-| location         | varchar(25)  | YES  |     | NULL    |       |
-| dateApplied      | date         | YES  |     | NULL    |       |
-| contactName      | varchar(50)  | YES  |     | NULL    |       |
-| contactMethod    | varchar(25)  | YES  |     | NULL    |       |
-| contactedMeFirst | varchar(3)   | YES  |     | NULL    |       |
-| status           | varchar(6)   | YES  |     | NULL    |       |
-| notes            | varchar(512) | YES  |     | NULL    |       |
-+------------------+--------------+------+-----+---------+-------+
++------------------+--------------+------+-----+---------+----------------+
+| Field            | Type         | Null | Key | Default | Extra          |
++------------------+--------------+------+-----+---------+----------------+
+| id               | int(11)      | NO   | PRI | NULL    | auto_increment |
+| company          | varchar(50)  | YES  |     | NULL    |                |
+| position         | varchar(128) | YES  |     | NULL    |                |
+| location         | varchar(25)  | YES  |     | NULL    |                |
+| dateApplied      | date         | YES  |     | NULL    |                |
+| contactName      | varchar(50)  | YES  |     | NULL    |                |
+| contactMethod    | varchar(25)  | YES  |     | NULL    |                |
+| contactedMeFirst | varchar(3)   | YES  |     | NULL    |                |
+| status           | varchar(6)   | YES  |     | NULL    |                |
+| notes            | varchar(512) | YES  |     | NULL    |                |
++------------------+--------------+------+-----+---------+----------------+
 
 RECOMMENDED MODULES
 -------------------

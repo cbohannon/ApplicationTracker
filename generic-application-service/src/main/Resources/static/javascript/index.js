@@ -27,35 +27,11 @@ $(document).ready(function() {
 (function ($) {
     $.fn.extend({
         deleteApplication: function (evt) {
-
-            // TODO: Add all of this in loop and figure out the best option(s)
-            /*
-            // var rowItems = [];
-            var rowItems = {};
-            rowItems["company"] = $(evt.target).parents("tr").find("td:eq(0)").text();
-            rowItems["position"] = $(evt.target).parents("tr").find("td:eq(1)").text();
-            rowItems["location"] = $(evt.target).parents("tr").find("td:eq(2)").text();
-            rowItems["dateApplied"] = $(evt.target).parents("tr").find("td:eq(3)").text();
-            rowItems["contactName"] = $(evt.target).parents("tr").find("td:eq(4)").text();
-            rowItems["contactMethod"] = $(evt.target).parents("tr").find("td:eq(5)").text();
-            rowItems["contactedMeFirst"] = $(evt.target).parents("tr").find("td:eq(6)").text();
-            rowItems["status"] = $(evt.target).parents("tr").find("td:eq(7)").text();
-
-            rowItems.push($(evt.target).parents("tr").find("td:eq(0)").text());
-            rowItems.push($(evt.target).parents("tr").find("td:eq(1)").text());
-            rowItems.push($(evt.target).parents("tr").find("td:eq(2)").text());
-            rowItems.push($(evt.target).parents("tr").find("td:eq(3)").text());
-            rowItems.push($(evt.target).parents("tr").find("td:eq(4)").text());
-            rowItems.push($(evt.target).parents("tr").find("td:eq(5)").text());
-            rowItems.push($(evt.target).parents("tr").find("td:eq(6)").text());
-            rowItems.push($(evt.target).parents("tr").find("td:eq(7)").text());
-
-            console.log(JSON.stringify(rowItems));
-            */
+            var id = $(evt.target).parents("tr").find("td:eq(0)").text();
 
             $.ajax({
                 type: "DELETE" ,
-                url: "http://localhost:80/rest/applications?application=" + "Bogus!", //JSON.stringify(rowItems),
+                url: "http://localhost:80/rest/applications?application=" + id.replace("#", ""),
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                 dataType: "json",
                 cache: false,
@@ -135,6 +111,9 @@ $(document).ready(function() {
                         var row = $("<tr>");
                         $.each(outerObject, function(innerKey, innerObject) {
                             switch (innerKey) {
+                                case "id":
+                                    row.after().append($("<td>").text("#" + innerObject.toString()));
+                                    break;
                                 case "company":
                                     row.after().append($("<td>").text(innerObject.toString()));
                                     break;

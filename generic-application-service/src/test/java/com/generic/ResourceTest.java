@@ -10,9 +10,11 @@ import javax.ws.rs.core.Response.StatusType;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.jooq.tables.records.InformationRecord;
 import org.glassfish.grizzly.http.server.HttpServer;
 
 import org.jooq.DSLContext;
+import org.jooq.InsertSetMoreStep;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.junit.After;
@@ -20,13 +22,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import static com.jooq.tables.Information.INFORMATION;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
@@ -41,6 +43,30 @@ public class ResourceTest {
         Main.GetProperties();
         Client client = ClientBuilder.newClient();
         target = client.target(Main.BASE_URI);
+
+        // Let's go ahead and insert some test data
+        try {
+            Class.forName(Main.dbDriver).newInstance();
+            Connection connection = DriverManager.getConnection(Main.dbUrl + Main.dbName, Main.dbPassword, Main.dbUsername);
+            DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
+
+            InsertSetMoreStep<InformationRecord> result = dslContext.insertInto(INFORMATION)
+                                                                    .set(INFORMATION.COMPANY, "JUnit Test Company")
+                                                                    .set(INFORMATION.POSITION, "JUnit Test Position")
+                                                                    .set(INFORMATION.LOCATION, "JUnit Test Location")
+                                                                    .set(INFORMATION.DATEAPPLIED, Date.valueOf("2015-1-1"))
+                                                                    .set(INFORMATION.CONTACTNAME, "JUnit Test Name")
+                                                                    .set(INFORMATION.CONTACTMETHOD, "JUnit Test Method")
+                                                                    .set(INFORMATION.CONTACTEDMEFIRST, "Yes")
+                                                                    .set(INFORMATION.STATUS, "Open")
+                                                                    .set(INFORMATION.NOTES, "JUnit testing action!");
+
+            result.execute();
+            result.close();
+            connection.close();
+        } catch (InstantiationException | IllegalAccessException | SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -67,11 +93,9 @@ public class ResourceTest {
         for (int index = 0; index < jsonArray.size(); index ++) {
             JsonObject jsonObject = jsonArray.get(index).getAsJsonObject();
             if (jsonObject.equals(jsonCompareObject)) {
-                assertTrue(true);
+                assertThat(jsonObject, is(jsonCompareObject));
             }
         }
-
-        assertFalse(false);
     }
 
     @Test
@@ -91,11 +115,28 @@ public class ResourceTest {
 
     @Test
     public void testDeleteApplication() throws UnsupportedEncodingException {
-        String encodedJson = URLEncoder.encode(Main.jsonInput, "UTF-8");
-        StatusType statusType = target.path("applications").queryParam("application", encodedJson)
-                                      .request(MediaType.APPLICATION_JSON_TYPE).delete().getStatusInfo();
+        try {
+            Class.forName(Main.dbDriver).newInstance();
+            Connection connection = DriverManager.getConnection(Main.dbUrl + Main.dbName, Main.dbPassword, Main.dbUsername);
+            DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
 
-        assertThat(statusType.getStatusCode(), is(204));
+            InformationRecord fetchedRecord = dslContext.selectFrom(INFORMATION)
+                                                        .where(INFORMATION.COMPANY.equal("JUnit Test Company"))
+                                                        .fetchOne();
+
+            Object idValue = fetchedRecord.getValue(0);
+
+            if (fetchedRecord.size() == 0) {
+                assertThat("Record size should be 1.", fetchedRecord.size(), greaterThan(0));
+            } else {
+                StatusType statusType = target.path("applications").queryParam("application", idValue)
+                                                                   .request(MediaType.APPLICATION_JSON_TYPE)
+                                                                   .delete().getStatusInfo();
+                assertThat(statusType.getStatusCode(), is(204));
+            }
+        } catch (InstantiationException | IllegalAccessException | SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -121,6 +162,7 @@ public class ResourceTest {
             Connection connection = DriverManager.getConnection(Main.dbUrl + Main.dbName, Main.dbPassword, Main.dbUsername);
             DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
 
+            // Now we'll just make sure the database is "clean"
             dslContext.delete(INFORMATION).where(INFORMATION.COMPANY.equal("JUnit Test Company"))
                                           .and(INFORMATION.POSITION.equal("JUnit Test Position"))
                                           .and(INFORMATION.LOCATION.equal("JUnit Test Location"))

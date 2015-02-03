@@ -16,7 +16,7 @@ package com.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Information extends org.jooq.impl.TableImpl<com.jooq.tables.records.InformationRecord> {
 
-	private static final long serialVersionUID = -2143264691;
+	private static final long serialVersionUID = 590768947;
 
 	/**
 	 * The reference instance of <code>applications.information</code>
@@ -30,6 +30,11 @@ public class Information extends org.jooq.impl.TableImpl<com.jooq.tables.records
 	public java.lang.Class<com.jooq.tables.records.InformationRecord> getRecordType() {
 		return com.jooq.tables.records.InformationRecord.class;
 	}
+
+	/**
+	 * The column <code>applications.information.id</code>.
+	 */
+	public final org.jooq.TableField<com.jooq.tables.records.InformationRecord, java.lang.Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
 	/**
 	 * The column <code>applications.information.company</code>.
@@ -96,6 +101,22 @@ public class Information extends org.jooq.impl.TableImpl<com.jooq.tables.records
 
 	private Information(java.lang.String alias, org.jooq.Table<com.jooq.tables.records.InformationRecord> aliased, org.jooq.Field<?>[] parameters) {
 		super(alias, com.jooq.Applications.APPLICATIONS, aliased, parameters, "");
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public org.jooq.Identity<com.jooq.tables.records.InformationRecord, java.lang.Integer> getIdentity() {
+		return com.jooq.Keys.IDENTITY_INFORMATION;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public java.util.List<org.jooq.UniqueKey<com.jooq.tables.records.InformationRecord>> getKeys() {
+		return java.util.Arrays.<org.jooq.UniqueKey<com.jooq.tables.records.InformationRecord>>asList(com.jooq.Keys.KEY_INFORMATION_ID_UNIQUE);
 	}
 
 	/**

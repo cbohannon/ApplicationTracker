@@ -21,11 +21,13 @@ public class Keys {
 	// IDENTITY definitions
 	// -------------------------------------------------------------------------
 
+	public static final org.jooq.Identity<com.jooq.tables.records.InformationRecord, java.lang.Integer> IDENTITY_INFORMATION = Identities0.IDENTITY_INFORMATION;
 
 	// -------------------------------------------------------------------------
 	// UNIQUE and PRIMARY KEY definitions
 	// -------------------------------------------------------------------------
 
+	public static final org.jooq.UniqueKey<com.jooq.tables.records.InformationRecord> KEY_INFORMATION_ID_UNIQUE = UniqueKeys0.KEY_INFORMATION_ID_UNIQUE;
 
 	// -------------------------------------------------------------------------
 	// FOREIGN KEY definitions
@@ -35,4 +37,12 @@ public class Keys {
 	// -------------------------------------------------------------------------
 	// [#1459] distribute members to avoid static initialisers > 64kb
 	// -------------------------------------------------------------------------
+
+	private static class Identities0 extends org.jooq.impl.AbstractKeys {
+		public static org.jooq.Identity<com.jooq.tables.records.InformationRecord, java.lang.Integer> IDENTITY_INFORMATION = createIdentity(com.jooq.tables.Information.INFORMATION, com.jooq.tables.Information.INFORMATION.ID);
+	}
+
+	private static class UniqueKeys0 extends org.jooq.impl.AbstractKeys {
+		public static final org.jooq.UniqueKey<com.jooq.tables.records.InformationRecord> KEY_INFORMATION_ID_UNIQUE = createUniqueKey(com.jooq.tables.Information.INFORMATION, com.jooq.tables.Information.INFORMATION.ID);
+	}
 }
