@@ -25,7 +25,7 @@ import static com.jooq.tables.Information.INFORMATION;
 
 @Path("applications")
 @Produces("application/json")
-@Consumes({"application/json,text/plain"})
+@Consumes({"application/json,text/plain,application/x-www-form-urlencoded"})
 public class Resource {
     @GET
     public Response getAllApplications()

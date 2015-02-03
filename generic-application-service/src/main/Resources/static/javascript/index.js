@@ -18,13 +18,63 @@ $(document).ready(function() {
         evt.preventDefault();
         $().addApplication();
     });
+    $(document).on("click", "[name=btnDelete]", function(evt) {
+        evt.preventDefault();
+        $().deleteApplication(evt);
+    });
 });
 
 (function ($) {
     $.fn.extend({
+        deleteApplication: function (evt) {
+
+            // TODO: Add all of this in loop and figure out the best option(s)
+            /*
+            // var rowItems = [];
+            var rowItems = {};
+            rowItems["company"] = $(evt.target).parents("tr").find("td:eq(0)").text();
+            rowItems["position"] = $(evt.target).parents("tr").find("td:eq(1)").text();
+            rowItems["location"] = $(evt.target).parents("tr").find("td:eq(2)").text();
+            rowItems["dateApplied"] = $(evt.target).parents("tr").find("td:eq(3)").text();
+            rowItems["contactName"] = $(evt.target).parents("tr").find("td:eq(4)").text();
+            rowItems["contactMethod"] = $(evt.target).parents("tr").find("td:eq(5)").text();
+            rowItems["contactedMeFirst"] = $(evt.target).parents("tr").find("td:eq(6)").text();
+            rowItems["status"] = $(evt.target).parents("tr").find("td:eq(7)").text();
+
+            rowItems.push($(evt.target).parents("tr").find("td:eq(0)").text());
+            rowItems.push($(evt.target).parents("tr").find("td:eq(1)").text());
+            rowItems.push($(evt.target).parents("tr").find("td:eq(2)").text());
+            rowItems.push($(evt.target).parents("tr").find("td:eq(3)").text());
+            rowItems.push($(evt.target).parents("tr").find("td:eq(4)").text());
+            rowItems.push($(evt.target).parents("tr").find("td:eq(5)").text());
+            rowItems.push($(evt.target).parents("tr").find("td:eq(6)").text());
+            rowItems.push($(evt.target).parents("tr").find("td:eq(7)").text());
+
+            console.log(JSON.stringify(rowItems));
+            */
+
+            $.ajax({
+                type: "DELETE" ,
+                url: "http://localhost:80/rest/applications?application=" + "Bogus!", //JSON.stringify(rowItems),
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                dataType: "json",
+                cache: false,
+                success: function(data) {
+                    $("#footerMessage").find("span").remove();
+                    $("<span>Success! Data deleted.</span>").appendTo("#footerMessage");
+                    console.log("Success! Data submitted: " + data);
+                },
+                error: function(jqXHR) {
+                    $("#footerMessage").find("span").remove();
+                    $("<span>It looks like we had an error.</span>").appendTo("#footerMessage");
+                    console.log("Error message: " + jqXHR.statusText +" code " + jqXHR.status);
+                }
+            });
+        },
         submitApplication: function() {
             var jsonArray = $("#frmInput").serializeArray();
-            console.log("jsonArray");
+            console.log(jsonArray);
+
             $.ajax({
                 type: "POST",
                 url: "http://localhost:80/rest/applications",
@@ -43,6 +93,7 @@ $(document).ready(function() {
                     console.log("Error message: " + jqXHR.statusText +" code " + jqXHR.status);
                 }
             });
+
             setTimeout(function() {
                 $().clearForm();
             }, 500);
