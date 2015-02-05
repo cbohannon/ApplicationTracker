@@ -22,15 +22,55 @@ $(document).ready(function() {
         evt.preventDefault();
         $().deleteApplication(evt);
     });
+    $(document).on("click", "[name=btnEdit]", function (evt) {
+        evt.preventDefault();
+        $().editApplication(evt)
+    });
 });
 
 (function ($) {
     $.fn.extend({
+        editApplication: function (evt) {
+            var id = $(evt.target).parents("tr").find("td:eq(0)").text();
+
+            // Get all the data in the row except for the "id"
+            var tableData = [];
+            tableData.push("company:" +  $(evt.target).parents("tr").find("td:eq(1)").text());
+            tableData.push("position:" +  $(evt.target).parents("tr").find("td:eq(2)").text());
+            tableData.push("location:" +  $(evt.target).parents("tr").find("td:eq(3)").text());
+            tableData.push("dateApplied:" +  $(evt.target).parents("tr").find("td:eq(4)").text());
+            tableData.push("contactName:" +  $(evt.target).parents("tr").find("td:eq(5)").text());
+            tableData.push("contactMethod:" +  $(evt.target).parents("tr").find("td:eq(6)").text());
+            tableData.push("contactedMeFirst:" +  $(evt.target).parents("tr").find("td:eq(7)").text());
+            tableData.push("status:" +  $(evt.target).parents("tr").find("td:eq(8)").text());
+            // TODO: tableData.push("notes:" +  $(evt.target).parents("tr").find("td:eq(9)").text() + "}");
+
+            console.log(tableData.toString());
+
+            $.ajax({
+                type: "PUT",
+                url: "http://localhost:80/rest/applications?id=" + id.replace("#", ""),
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(tableData),
+                dataType: "json",
+                cache: false,
+                success: function(data) {
+                    $("#footerMessage").find("span").remove();
+                    $("<span>Success! Data submitted.</span>").appendTo("#footerMessage");
+                    console.log("Success! Data submitted: " + data);
+                },
+                error: function(jqXHR) {
+                    $("#footerMessage").find("span").remove();
+                    $("<span>It looks like we had an error.</span>").appendTo("#footerMessage");
+                    console.log("Error message: " + jqXHR.statusText +" code " + jqXHR.status);
+                }
+            });
+        },
         deleteApplication: function (evt) {
             var id = $(evt.target).parents("tr").find("td:eq(0)").text();
 
             $.ajax({
-                type: "DELETE" ,
+                type: "DELETE",
                 url: "http://localhost:80/rest/applications?application=" + id.replace("#", ""),
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                 dataType: "json",

@@ -165,6 +165,16 @@ public class ResourceTest {
         assertThat(statusTypeSecond.getStatusCode(), is(204));
     }
 
+    @Test
+    public void testUpdateApplication400() {
+        StatusType statusType = target.path("applications").queryParam("id", "")
+                                                           .request(MediaType.APPLICATION_JSON_TYPE)
+                                                           .put(Entity.json(Main.jsonValidate))
+                                                           .getStatusInfo();
+
+        assertThat(statusType.getStatusCode(), is(400));
+    }
+
     @After
     public void tearDown() throws Exception {
         try {

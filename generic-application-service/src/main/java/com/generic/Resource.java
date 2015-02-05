@@ -147,6 +147,7 @@ public class Resource {
         }
 
         JsonParser jsonParser = new JsonParser();
+        // JsonArray jsonArray = jsonParser.parse(jsonRequest).getAsJsonArray();
         JsonObject jsonObject = jsonParser.parse(jsonRequest).getAsJsonObject();
 
         try {
