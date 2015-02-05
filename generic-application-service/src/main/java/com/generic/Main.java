@@ -25,6 +25,7 @@ public class Main {
     protected static String dbPassword;
     protected static String jsonInput;
     protected static String jsonValidate;
+    protected static String jsonUpdate;
 
     public static HttpServer startServer() {
         final ResourceConfig rc = new ResourceConfig().packages("com.generic");
@@ -44,6 +45,7 @@ public class Main {
             dbPassword = properties.getProperty("db.password");
             jsonInput = properties.getProperty("json.junit");
             jsonValidate = properties.getProperty("json.junit.validate");
+            jsonUpdate = properties.getProperty("json.junit.update");
         } finally {
             if (inputStream != null) {
                 inputStream.close();

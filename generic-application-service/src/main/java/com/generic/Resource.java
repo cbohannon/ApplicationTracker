@@ -109,7 +109,7 @@ public class Resource {
     }
 
     @DELETE
-    public Response deleteApplication(@QueryParam("application") Integer idValue) throws SQLException {
+    public Response deleteApplication(@QueryParam("application") Integer idValue) {
         if (idValue == null) {
             return Response.status(400).build();
         }
@@ -133,7 +133,7 @@ public class Resource {
 
             connection.close();
             fetchedRecord.reset();
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
 
@@ -141,8 +141,38 @@ public class Resource {
     }
 
     @PUT
-    public Response updateApplication(String jsonRequest) {
-        return Response.status(501).build();
+    public Response updateApplication(String jsonRequest, @QueryParam("id") Integer idValue) {
+        if (idValue == null) {
+            return Response.status(400).build();
+        }
+
+        JsonParser jsonParser = new JsonParser();
+        JsonObject jsonObject = jsonParser.parse(jsonRequest).getAsJsonObject();
+
+        try {
+            Class.forName(Main.dbDriver).newInstance();
+            Connection connection = DriverManager.getConnection(Main.dbUrl + Main.dbName, Main.dbPassword, Main.dbUsername);
+            DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
+            UpdateConditionStep<InformationRecord> updateRecord = dslContext.update(INFORMATION)
+                                                                          .set(INFORMATION.COMPANY, jsonObject.get("company").getAsString())
+                                                                          .set(INFORMATION.POSITION, jsonObject.get("position").getAsString())
+                                                                          .set(INFORMATION.LOCATION, jsonObject.get("location").getAsString())
+                                                                          .set(INFORMATION.DATEAPPLIED, Date.valueOf(jsonObject.get("dateApplied").getAsString()))
+                                                                          .set(INFORMATION.CONTACTNAME, jsonObject.get("contactName").getAsString())
+                                                                          .set(INFORMATION.CONTACTMETHOD, jsonObject.get("contactMethod").getAsString())
+                                                                          .set(INFORMATION.CONTACTEDMEFIRST, jsonObject.get("contactedMeFirst").getAsString())
+                                                                          .set(INFORMATION.STATUS, jsonObject.get("status").getAsString())
+                                                                          .set(INFORMATION.NOTES, jsonObject.get("notes").getAsString())
+                                                                          .where(INFORMATION.ID.equal(idValue));
+
+            updateRecord.execute();
+            connection.close();
+            updateRecord.close();
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+
+        return Response.status(204).build();
     }
 
     private class Application {

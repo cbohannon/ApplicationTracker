@@ -117,7 +117,8 @@ public class ResourceTest {
     public void testDeleteApplication() throws UnsupportedEncodingException {
         try {
             Class.forName(Main.dbDriver).newInstance();
-            Connection connection = DriverManager.getConnection(Main.dbUrl + Main.dbName, Main.dbPassword, Main.dbUsername);
+            Connection connection = DriverManager.getConnection(Main.dbUrl + Main.dbName, Main.dbPassword,
+                                                                                          Main.dbUsername);
             DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
 
             InformationRecord fetchedRecord = dslContext.selectFrom(INFORMATION)
@@ -148,11 +149,20 @@ public class ResourceTest {
     }
 
     @Test
-    public void testUpdateApplication501() {
-        StatusType statusType = target.path("applications").request(MediaType.APPLICATION_JSON_TYPE)
-                                                           .put(Entity.json("")).getStatusInfo();
+    public void testUpdateApplication() {
+        // TODO: I should probably query the database directly to check the update occurred
+        StatusType statusTypeFirst = target.path("applications").queryParam("id", "14")
+                                                                .request(MediaType.APPLICATION_JSON_TYPE)
+                                                                .put(Entity.json(Main.jsonUpdate))
+                                                                .getStatusInfo();
+        assertThat(statusTypeFirst.getStatusCode(), is(204));
 
-        assertThat(statusType.getStatusCode(), is(501));
+        // Let's go ahead and set the record back to the original state
+        StatusType statusTypeSecond = target.path("applications").queryParam("id", "14")
+                                                                .request(MediaType.APPLICATION_JSON_TYPE)
+                                                                .put(Entity.json(Main.jsonValidate))
+                                                                .getStatusInfo();
+        assertThat(statusTypeSecond.getStatusCode(), is(204));
     }
 
     @After
