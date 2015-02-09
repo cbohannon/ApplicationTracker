@@ -23,7 +23,7 @@ import static com.jooq.tables.Information.INFORMATION;
 
 @Path("applications")
 @Produces("application/json")
-@Consumes({"application/json,text/plain,application/x-www-form-urlencoded"})
+@Consumes("application/json")
 public class Resource {
     @GET
     public Response getAllApplications()
@@ -88,15 +88,15 @@ public class Resource {
             DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
 
             InsertSetMoreStep<InformationRecord> result = dslContext.insertInto(INFORMATION)
-                                                                    .set(INFORMATION.COMPANY, queryBuilder.get(0))
-                                                                    .set(INFORMATION.POSITION, queryBuilder.get(1))
-                                                                    .set(INFORMATION.LOCATION, queryBuilder.get(2))
-                                                                    .set(INFORMATION.DATEAPPLIED, Date.valueOf(queryBuilder.get(3)))
-                                                                    .set(INFORMATION.CONTACTNAME, queryBuilder.get(4))
-                                                                    .set(INFORMATION.CONTACTMETHOD, queryBuilder.get(5))
-                                                                    .set(INFORMATION.CONTACTEDMEFIRST, queryBuilder.get(6))
-                                                                    .set(INFORMATION.STATUS, queryBuilder.get(7))
-                                                                    .set(INFORMATION.NOTES, queryBuilder.get(8));
+                                                        .set(INFORMATION.COMPANY, queryBuilder.get(0))
+                                                        .set(INFORMATION.POSITION, queryBuilder.get(1))
+                                                        .set(INFORMATION.LOCATION, queryBuilder.get(2))
+                                                        .set(INFORMATION.DATEAPPLIED, Date.valueOf(queryBuilder.get(3)))
+                                                        .set(INFORMATION.CONTACTNAME, queryBuilder.get(4))
+                                                        .set(INFORMATION.CONTACTMETHOD, queryBuilder.get(5))
+                                                        .set(INFORMATION.CONTACTEDMEFIRST, queryBuilder.get(6))
+                                                        .set(INFORMATION.STATUS, queryBuilder.get(7))
+                                                        .set(INFORMATION.NOTES, queryBuilder.get(8));
 
             result.execute();
             result.close();
@@ -142,12 +142,12 @@ public class Resource {
 
     @PUT
     public Response updateApplication(String jsonRequest, @QueryParam("id") Integer idValue) {
+        // TODO: Still need to validate if this is the best way to perform the PUT
         if (idValue == null) {
             return Response.status(400).build();
         }
 
         JsonParser jsonParser = new JsonParser();
-        // JsonArray jsonArray = jsonParser.parse(jsonRequest).getAsJsonArray();
         JsonObject jsonObject = jsonParser.parse(jsonRequest).getAsJsonObject();
 
         try {
@@ -155,16 +155,16 @@ public class Resource {
             Connection connection = DriverManager.getConnection(Main.dbUrl + Main.dbName, Main.dbPassword, Main.dbUsername);
             DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
             UpdateConditionStep<InformationRecord> updateRecord = dslContext.update(INFORMATION)
-                                                                          .set(INFORMATION.COMPANY, jsonObject.get("company").getAsString())
-                                                                          .set(INFORMATION.POSITION, jsonObject.get("position").getAsString())
-                                                                          .set(INFORMATION.LOCATION, jsonObject.get("location").getAsString())
-                                                                          .set(INFORMATION.DATEAPPLIED, Date.valueOf(jsonObject.get("dateApplied").getAsString()))
-                                                                          .set(INFORMATION.CONTACTNAME, jsonObject.get("contactName").getAsString())
-                                                                          .set(INFORMATION.CONTACTMETHOD, jsonObject.get("contactMethod").getAsString())
-                                                                          .set(INFORMATION.CONTACTEDMEFIRST, jsonObject.get("contactedMeFirst").getAsString())
-                                                                          .set(INFORMATION.STATUS, jsonObject.get("status").getAsString())
-                                                                          .set(INFORMATION.NOTES, jsonObject.get("notes").getAsString())
-                                                                          .where(INFORMATION.ID.equal(idValue));
+                                .set(INFORMATION.COMPANY, jsonObject.get("company").getAsString())
+                                .set(INFORMATION.POSITION, jsonObject.get("position").getAsString())
+                                .set(INFORMATION.LOCATION, jsonObject.get("location").getAsString())
+                                .set(INFORMATION.DATEAPPLIED, Date.valueOf(jsonObject.get("dateApplied").getAsString()))
+                                .set(INFORMATION.CONTACTNAME, jsonObject.get("contactName").getAsString())
+                                .set(INFORMATION.CONTACTMETHOD, jsonObject.get("contactMethod").getAsString())
+                                .set(INFORMATION.CONTACTEDMEFIRST, jsonObject.get("contactedMeFirst").getAsString())
+                                .set(INFORMATION.STATUS, jsonObject.get("status").getAsString())
+                                .set(INFORMATION.NOTES, jsonObject.get("notes").getAsString())
+                                .where(INFORMATION.ID.equal(idValue));
 
             updateRecord.execute();
             connection.close();

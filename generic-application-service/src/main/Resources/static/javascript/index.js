@@ -1,3 +1,4 @@
+// TODO: Provide better messaging in the footer
 $(document).ready(function() {
     $("#btnSubmitApplication").click(function(evt) {
         evt.preventDefault();
@@ -45,8 +46,11 @@ $(document).ready(function() {
             tableData.push("status:" +  $(evt.target).parents("tr").find("td:eq(8)").text());
             // TODO: tableData.push("notes:" +  $(evt.target).parents("tr").find("td:eq(9)").text() + "}");
 
+            console.log(id);
             console.log(tableData.toString());
 
+            // TODO: Still not sure how I want the PUT to work
+            /*
             $.ajax({
                 type: "PUT",
                 url: "http://localhost:80/rest/applications?id=" + id.replace("#", ""),
@@ -65,27 +69,34 @@ $(document).ready(function() {
                     console.log("Error message: " + jqXHR.statusText +" code " + jqXHR.status);
                 }
             });
+            */
         },
         deleteApplication: function (evt) {
-            var id = $(evt.target).parents("tr").find("td:eq(0)").text();
+            var result = confirm("Are you sure?");
+            if (!result) {
+                $("#footerMessage").find("span").remove();
+                $("<span>Action canceled.</span>").appendTo("#footerMessage");
+            } else {
+                var id = $(evt.target).parents("tr").find("td:eq(0)").text();
 
-            $.ajax({
-                type: "DELETE",
-                url: "http://localhost:80/rest/applications?application=" + id.replace("#", ""),
-                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-                dataType: "json",
-                cache: false,
-                success: function(data) {
-                    $("#footerMessage").find("span").remove();
-                    $("<span>Success! Data deleted.</span>").appendTo("#footerMessage");
-                    console.log("Success! Data submitted: " + data);
-                },
-                error: function(jqXHR) {
-                    $("#footerMessage").find("span").remove();
-                    $("<span>It looks like we had an error.</span>").appendTo("#footerMessage");
-                    console.log("Error message: " + jqXHR.statusText +" code " + jqXHR.status);
-                }
-            });
+                $.ajax({
+                    type: "DELETE",
+                    url: "http://localhost:80/rest/applications?application=" + id.replace("#", ""),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    cache: false,
+                    success: function(data) {
+                        $("#footerMessage").find("span").remove();
+                        $("<span>Success! Data deleted.</span>").appendTo("#footerMessage");
+                        console.log("Success! Data submitted: " + data);
+                    },
+                    error: function(jqXHR) {
+                        $("#footerMessage").find("span").remove();
+                        $("<span>It looks like we had an error.</span>").appendTo("#footerMessage");
+                        console.log("Error message: " + jqXHR.statusText +" code " + jqXHR.status);
+                    }
+                });
+            }
         },
         submitApplication: function() {
             var jsonArray = $("#frmInput").serializeArray();

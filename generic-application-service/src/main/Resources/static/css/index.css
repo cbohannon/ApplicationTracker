@@ -129,14 +129,6 @@ label.error {
     font-weight:bold;
 }
 
-.overdue {
-    background: #F7DCE5;
-}
-
 .warning {
     background: #F7F7DC;
-}
-
-.taskCompleted {
-    text-decoration: line-through;
 }
