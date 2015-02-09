@@ -44,7 +44,7 @@ $(document).ready(function() {
             tableData.push("contactMethod:" +  $(evt.target).parents("tr").find("td:eq(6)").text());
             tableData.push("contactedMeFirst:" +  $(evt.target).parents("tr").find("td:eq(7)").text());
             tableData.push("status:" +  $(evt.target).parents("tr").find("td:eq(8)").text());
-            // TODO: tableData.push("notes:" +  $(evt.target).parents("tr").find("td:eq(9)").text() + "}");
+            tableData.push("notes:" +  $(evt.target).parents("tr").find("td:eq(9)").text());
 
             console.log(id);
             console.log(tableData.toString());
@@ -190,20 +190,28 @@ $(document).ready(function() {
                                     row.append($("<td>").text(innerObject.toString()));
                                     break;
                                 case "notes":
-                                    // TODO: Adjust how notes gets displayed on the page
-                                    // row.append($("<td>").text(innerObject.toString()));
-                                    // row.append($("<td>").text("Currently not displaying notes."));
+                                    row.append($("<td>").addClass("wrap").text(innerObject.toString()));
                                     break;
                                 default:
                                     console.log("Error iterating over innerObject: " + innerKey + " " + innerObject);
                             }
                         });
-                        var btnEdit = $('<input type="button" name="btnEdit" value="Edit" />');
-                        btnEdit.appendTo(row);
-                        var btnDelete = $('<input type="button" name="btnDelete" value="Delete" />');
-                        btnDelete.appendTo(row);
-                        var btnNotes = $('<input type="button" name="btnNotes" value="Notes" />');
-                        btnNotes.appendTo(row);
+
+                        var btnEdit = $("<button/>", {
+                            type: "button",
+                            class: "btnSmall",
+                            name: "btnEdit",
+                            text: "Edit"
+                        });
+
+                        var btnDelete = $("<button/>", {
+                            type: "button",
+                            class: "btnSmall",
+                            name: "btnDelete",
+                            text: "Delete"
+                        });
+
+                        row.append($("<td>").append(btnEdit).append(" ").append(btnDelete));
                         $("#tblApplications").append(row);
                     });
                     $("#footerMessage").find("span").remove();
