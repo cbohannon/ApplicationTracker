@@ -50,6 +50,8 @@ public class Resource {
                                                 r.getValue("notes").toString()));
             }
 
+            Main.logger.info(String.valueOf(result.size()) + " records read.");
+
             connection.close();
             result.clear();
         } catch (InstantiationException | SQLException | ClassNotFoundException | IllegalAccessException e) {
@@ -99,6 +101,8 @@ public class Resource {
                                                         .set(INFORMATION.NOTES, queryBuilder.get(8));
 
             result.execute();
+            Main.logger.info("New record inserted.");
+
             result.close();
             connection.close();
         } catch (InstantiationException | IllegalAccessException | SQLException | ClassNotFoundException e) {
@@ -167,6 +171,8 @@ public class Resource {
                                 .where(INFORMATION.ID.equal(idValue));
 
             updateRecord.execute();
+            Main.logger.info("{}, successfully updated.", idValue);
+
             connection.close();
             updateRecord.close();
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e) {
