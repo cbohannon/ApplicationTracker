@@ -19,6 +19,7 @@ import com.jooq.tables.records.InformationRecord;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 
+import static com.generic.Main.*;
 import static com.jooq.tables.Information.INFORMATION;
 
 @Path("applications")
@@ -31,8 +32,8 @@ public class Resource {
         List<Application> application = new ArrayList<>();
 
         try {
-            Class.forName(Main.dbDriver).newInstance();
-            Connection connection = DriverManager.getConnection(Main.dbUrl + Main.dbName, Main.dbPassword, Main.dbUsername);
+            Class.forName(getDbDriver()).newInstance();
+            Connection connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbPassword(), getDbUsername());
 
             DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
             Result<Record> result = dslContext.select().from(INFORMATION).fetch();
@@ -50,12 +51,12 @@ public class Resource {
                                                 r.getValue("notes").toString()));
             }
 
-            Main.logger.info(String.valueOf(result.size()) + " records read.");
+            Main.LOGGER.info(result.size() + " records read.");
 
             connection.close();
             result.clear();
         } catch (InstantiationException | SQLException | ClassNotFoundException | IllegalAccessException e) {
-            e.printStackTrace();
+            Main.LOGGER.info(e.getMessage());
         }
 
         Gson gson = new Gson();
@@ -79,14 +80,14 @@ public class Resource {
 
             String key = jsonObject.get("name").getAsString();
             String value = jsonObject.get("value").getAsString();
-            Main.logger.debug("jsonObject Key: {}, jsonObject Value: {}", key, value);
+            Main.LOGGER.debug("jsonObject Key: {}, jsonObject Value: {}", key, value);
 
             queryBuilder.add(index, value);
         }
 
         try {
-            Class.forName(Main.dbDriver).newInstance();
-            Connection connection = DriverManager.getConnection(Main.dbUrl + Main.dbName, Main.dbPassword, Main.dbUsername);
+            Class.forName(getDbDriver()).newInstance();
+            Connection connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbPassword(), getDbUsername());
             DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
 
             InsertSetMoreStep<InformationRecord> result = dslContext.insertInto(INFORMATION)
@@ -101,12 +102,12 @@ public class Resource {
                                                         .set(INFORMATION.NOTES, queryBuilder.get(8));
 
             result.execute();
-            Main.logger.info("New record inserted.");
+            Main.LOGGER.info("New record inserted.");
 
             result.close();
             connection.close();
         } catch (InstantiationException | IllegalAccessException | SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
+            Main.LOGGER.info(e.getMessage());
         }
 
         return Response.status(204).build();
@@ -119,26 +120,26 @@ public class Resource {
         }
 
         try {
-            Class.forName(Main.dbDriver).newInstance();
-            Connection connection = DriverManager.getConnection(Main.dbUrl + Main.dbName, Main.dbPassword, Main.dbUsername);
+            Class.forName(getDbDriver()).newInstance();
+            Connection connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbPassword(), getDbUsername());
             DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
             InformationRecord fetchedRecord = dslContext.selectFrom(INFORMATION).where(INFORMATION.ID.equal(idValue)).fetchOne();
 
             if (fetchedRecord == null) {
-                Main.logger.info("No record to delete.");
+                Main.LOGGER.info("No record to delete.");
                 connection.close();
                 return Response.status(404).build();
             } else {
                 int value = dslContext.delete(INFORMATION).where(INFORMATION.ID.equal(idValue)).execute();
                 if (value == 1) {
-                    Main.logger.info("Successful record deletion: {}.", value);
+                    Main.LOGGER.info("Successful record deletion: {}.", value);
                 }
             }
 
             connection.close();
             fetchedRecord.reset();
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            Main.LOGGER.info(e.getMessage());
         }
 
         return Response.status(204).build();
@@ -155,8 +156,8 @@ public class Resource {
         JsonObject jsonObject = jsonParser.parse(jsonRequest).getAsJsonObject();
 
         try {
-            Class.forName(Main.dbDriver).newInstance();
-            Connection connection = DriverManager.getConnection(Main.dbUrl + Main.dbName, Main.dbPassword, Main.dbUsername);
+            Class.forName(getDbDriver()).newInstance();
+            Connection connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbPassword(), getDbUsername());
             DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
             UpdateConditionStep<InformationRecord> updateRecord = dslContext.update(INFORMATION)
                                 .set(INFORMATION.COMPANY, jsonObject.get("company").getAsString())
@@ -171,12 +172,12 @@ public class Resource {
                                 .where(INFORMATION.ID.equal(idValue));
 
             updateRecord.execute();
-            Main.logger.info("{}, successfully updated.", idValue);
+            Main.LOGGER.info("{}, successfully updated.", idValue);
 
             connection.close();
             updateRecord.close();
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            Main.LOGGER.info(e.getMessage());
         }
 
         return Response.status(204).build();
@@ -194,7 +195,7 @@ public class Resource {
         String status = "";
         String notes = "";
 
-        public Application(String id, String company, String position, String location, String dateApplied, String contactName,
+        private Application(String id, String company, String position, String location, String dateApplied, String contactName,
                            String contactMethod, String contactedMeFirst, String status, String notes) {
             this.id = id;
             this.company = company;

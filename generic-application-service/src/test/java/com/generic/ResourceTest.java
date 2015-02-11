@@ -27,27 +27,28 @@ import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import static com.generic.Main.*;
 import static com.jooq.tables.Information.INFORMATION;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 public class ResourceTest {
-
     private HttpServer server;
     private WebTarget target;
+    private String path = "applications";
 
     @Before
     public void setUp() throws Exception {
         server = Main.startServer();
-        Main.GetProperties();
+        Main.getProperties();
         Client client = ClientBuilder.newClient();
         target = client.target(Main.BASE_URI);
 
         // Let's go ahead and insert some test data
         try {
-            Class.forName(Main.dbDriver).newInstance();
-            Connection connection = DriverManager.getConnection(Main.dbUrl + Main.dbName, Main.dbPassword, Main.dbUsername);
+            Class.forName(getDbDriver()).newInstance();
+            Connection connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbPassword(), getDbUsername());
             DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
 
             InsertSetMoreStep<InformationRecord> result = dslContext.insertInto(INFORMATION)
@@ -65,29 +66,29 @@ public class ResourceTest {
             result.close();
             connection.close();
         } catch (InstantiationException | IllegalAccessException | SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
+            Main.LOGGER.info(e.getMessage());
         }
     }
 
     @Test
     public void testGetAllApplicationsStatusCode200() {
-        StatusType statusType = target.path("applications").request().get().getStatusInfo();
+        StatusType statusType = target.path(path).request().get().getStatusInfo();
         assertThat(statusType.getStatusCode(), is(200));
     }
 
     @Test
     public void testGetAllApplicationsStatusCode404() {
-        StatusType statusType = target.path("XapplicationsX").request().get().getStatusInfo();
+        StatusType statusType = target.path("X" + path + "X").request().get().getStatusInfo();
         assertThat(statusType.getStatusCode(), is(404));
     }
 
     @Test
     public void testGetAllApplicationsData() {
-        String responseMsg = target.path("applications").request().get(String.class);
+        String responseMsg = target.path(path).request().get(String.class);
 
         JsonParser jsonParser = new JsonParser();
         JsonArray jsonArray = jsonParser.parse(responseMsg).getAsJsonArray();
-        JsonObject jsonCompareObject = (JsonObject) jsonParser.parse(Main.jsonValidate);
+        JsonObject jsonCompareObject = (JsonObject) jsonParser.parse(getJsonValidate());
 
         // Check to make sure the test data is present in the return string
         for (int index = 0; index < jsonArray.size(); index ++) {
@@ -100,15 +101,15 @@ public class ResourceTest {
 
     @Test
     public void testPostNewApplicationData() {
-        StatusType statusType = target.path("applications").request(MediaType.APPLICATION_JSON_TYPE)
-                                                           .post(Entity.json(Main.jsonInput)).getStatusInfo();
+        StatusType statusType = target.path(path).request(MediaType.APPLICATION_JSON_TYPE)
+                                                           .post(Entity.json(getJsonInput())).getStatusInfo();
 
         assertThat(statusType.getStatusCode(), is(204));
     }
 
     @Test
     public void testPostNewApplicationResponse400() {
-        StatusType statusType = target.path("applications").request(MediaType.APPLICATION_JSON_TYPE)
+        StatusType statusType = target.path(path).request(MediaType.APPLICATION_JSON_TYPE)
                                                            .post(Entity.json("")).getStatusInfo();
         assertThat(statusType.getStatusCode(), is(400));
     }
@@ -116,9 +117,8 @@ public class ResourceTest {
     @Test
     public void testDeleteApplication() throws UnsupportedEncodingException {
         try {
-            Class.forName(Main.dbDriver).newInstance();
-            Connection connection = DriverManager.getConnection(Main.dbUrl + Main.dbName, Main.dbPassword,
-                                                                                          Main.dbUsername);
+            Class.forName(getDbDriver()).newInstance();
+            Connection connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbPassword(), getDbUsername());
             DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
 
             InformationRecord fetchedRecord = dslContext.selectFrom(INFORMATION)
@@ -130,19 +130,21 @@ public class ResourceTest {
             if (fetchedRecord.size() == 0) {
                 assertThat("Record size should be 1.", fetchedRecord.size(), greaterThan(0));
             } else {
-                StatusType statusType = target.path("applications").queryParam("application", idValue)
+                StatusType statusType = target.path(path).queryParam("application", idValue)
                                                                    .request(MediaType.APPLICATION_JSON_TYPE)
                                                                    .delete().getStatusInfo();
                 assertThat(statusType.getStatusCode(), is(204));
             }
+
+            connection.close();
         } catch (InstantiationException | IllegalAccessException | SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
+            Main.LOGGER.info(e.getMessage());
         }
     }
 
     @Test
     public void testDeleteApplication400() {
-        StatusType statusType = target.path("applications").queryParam("application", "")
+        StatusType statusType = target.path(path).queryParam("application", "")
                                       .request(MediaType.APPLICATION_JSON_TYPE).delete().getStatusInfo();
 
         assertThat(statusType.getStatusCode(), is(400));
@@ -151,25 +153,25 @@ public class ResourceTest {
     @Test
     public void testUpdateApplication() {
         // TODO: I should probably query the database directly to check the update occurred
-        StatusType statusTypeFirst = target.path("applications").queryParam("id", "14")
+        StatusType statusTypeFirst = target.path(path).queryParam("id", "14")
                                                                 .request(MediaType.APPLICATION_JSON_TYPE)
-                                                                .put(Entity.json(Main.jsonUpdate))
+                                                                .put(Entity.json(getJsonUpdate()))
                                                                 .getStatusInfo();
         assertThat(statusTypeFirst.getStatusCode(), is(204));
 
         // Let's go ahead and set the record back to the original state
-        StatusType statusTypeSecond = target.path("applications").queryParam("id", "14")
+        StatusType statusTypeSecond = target.path(path).queryParam("id", "14")
                                                                 .request(MediaType.APPLICATION_JSON_TYPE)
-                                                                .put(Entity.json(Main.jsonValidate))
+                                                                .put(Entity.json(getJsonValidate()))
                                                                 .getStatusInfo();
         assertThat(statusTypeSecond.getStatusCode(), is(204));
     }
 
     @Test
     public void testUpdateApplication400() {
-        StatusType statusType = target.path("applications").queryParam("id", "")
+        StatusType statusType = target.path(path).queryParam("id", "")
                                                            .request(MediaType.APPLICATION_JSON_TYPE)
-                                                           .put(Entity.json(Main.jsonValidate))
+                                                           .put(Entity.json(getJsonValidate()))
                                                            .getStatusInfo();
 
         assertThat(statusType.getStatusCode(), is(400));
@@ -178,8 +180,8 @@ public class ResourceTest {
     @After
     public void tearDown() throws Exception {
         try {
-            Class.forName(Main.dbDriver).newInstance();
-            Connection connection = DriverManager.getConnection(Main.dbUrl + Main.dbName, Main.dbPassword, Main.dbUsername);
+            Class.forName(getDbDriver()).newInstance();
+            Connection connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbPassword(), getDbUsername());
             DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
 
             // Now we'll just make sure the database is "clean"
@@ -196,7 +198,7 @@ public class ResourceTest {
 
             connection.close();
         } catch (InstantiationException | IllegalAccessException | SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
+            Main.LOGGER.info(e.getMessage());
         }
 
         server.shutdownNow();

@@ -16,23 +16,55 @@ import org.slf4j.LoggerFactory;
 
 public class Main {
     protected static final String BASE_URI = "http://localhost:80/rest/";
-    protected static final Logger logger = LoggerFactory.getLogger(Main.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-    protected static String dbUrl;
-    protected static String dbName;
-    protected static String dbDriver;
-    protected static String dbUsername;
-    protected static String dbPassword;
-    protected static String jsonInput;
-    protected static String jsonValidate;
-    protected static String jsonUpdate;
+    public static String getDbUrl() {
+        return dbUrl;
+    }
+
+    public static String getDbName() {
+        return dbName;
+    }
+
+    public static String getDbDriver() {
+        return dbDriver;
+    }
+
+    public static String getDbUsername() {
+        return dbUsername;
+    }
+
+    public static String getDbPassword() {
+        return dbPassword;
+    }
+
+    public static String getJsonInput() {
+        return jsonInput;
+    }
+
+    public static String getJsonValidate() {
+        return jsonValidate;
+    }
+
+    public static String getJsonUpdate() {
+        return jsonUpdate;
+    }
+
+    private static String dbUrl;
+    private static String dbName;
+    private static String dbDriver;
+    private static String dbUsername;
+    private static String dbPassword;
+    private static String jsonInput;
+    private static String jsonValidate;
+    private static String jsonUpdate;
 
     public static HttpServer startServer() {
         final ResourceConfig rc = new ResourceConfig().packages("com.generic");
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
     }
 
-    public static void GetProperties() throws IOException {
+    public static void getProperties() throws IOException {
         InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("config.properties");
         Properties properties = new Properties();
 
@@ -60,19 +92,19 @@ public class Main {
         NetworkListener listener = new NetworkListener(BASE_URI);
         httpServer.addListener(listener);
 
-        GetProperties();
+        getProperties();
         try {
             httpServer.start();
 
-            logger.info("Database Driver: {}", dbDriver);
-            logger.info("Database URL: {}", dbUrl);
-            logger.info("Database Name: {}", dbName);
+            LOGGER.info("Database Driver: {}", dbDriver);
+            LOGGER.info("Database URL: {}", dbUrl);
+            LOGGER.info("Database Name: {}", dbName);
 
-            logger.info(String.format("Jersey app started with WADL available at " + "%sapplication.wadl", BASE_URI));
-            logger.info("Jersey app started with base URI at " + BASE_URI);
-            logger.info("Hit enter to stop the app...");
+            LOGGER.info(String.format("Jersey app started with WADL available at " + "%sapplication.wadl", BASE_URI));
+            LOGGER.info("Jersey app started with base URI at " + BASE_URI);
+            LOGGER.info("Hit enter to stop the app...");
 
-            logger.info(System.in.read() + " bytes read.");
+            LOGGER.info(System.in.read() + " bytes read.");
         } finally {
             listener.shutdownNow();
             httpServer.shutdownNow();
