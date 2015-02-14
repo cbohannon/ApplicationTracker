@@ -132,7 +132,7 @@ public class Resource {
             } else {
                 int value = dslContext.delete(INFORMATION).where(INFORMATION.ID.equal(idValue)).execute();
                 if (value == 1) {
-                    Main.LOGGER.info("Successful record deletion: {}.", value);
+                    Main.LOGGER.info("Record {} successfully deleted.", value);
                 }
             }
 
@@ -172,7 +172,7 @@ public class Resource {
                                 .where(INFORMATION.ID.equal(idValue));
 
             updateRecord.execute();
-            Main.LOGGER.info("{}, successfully updated.", idValue);
+            Main.LOGGER.info("Record {}, successfully updated.", idValue);
 
             connection.close();
             updateRecord.close();

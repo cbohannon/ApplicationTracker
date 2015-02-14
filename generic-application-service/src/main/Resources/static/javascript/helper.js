@@ -13,13 +13,15 @@
                 if (e.which == 13) {
                     var newContent = e.currentTarget.value;
                     $(evt.target).text(newContent);
-                    $(evt.target).parent().removeClass("cellEditing");
+                    $(evt.target).removeClass("cellEditing");
+                    // Only enable the button for the edited row
+                    $(evt.target).parent().find("[name=btnCommit]").removeAttr("disabled");
                 }
             });
 
             $(evt.target).children().first().blur(function () {
-                $(evt.target).parent().text(originalContent);
-                $(evt.target).parent().removeClass("cellEditing");
+                $(evt.target).text(originalContent);
+                $(evt.target).removeClass("cellEditing");
             });
         },
         clearForm: function() {

@@ -18,14 +18,17 @@ $(document).ready(function() {
         evt.preventDefault();
         $().addApplication();
     });
+
     $(document).on("click", "[name=btnDelete]", function(evt) {
         evt.preventDefault();
         $().deleteApplication(evt);
     });
+
     $(document).on("click", "[name=btnCommit]", function (evt) {
         evt.preventDefault();
         $().commitApplicationEdits(evt)
     });
+
     $(document).on("click", ".editable", function (evt) {
         evt.preventDefault();
         $().editApplication(evt)

@@ -2,6 +2,8 @@
 (function ($) {
     $.fn.extend({
         commitApplicationEdits: function (evt) {
+            $(evt.target).parents("tr").find("[name=btnCommit]").prop("disabled", true);
+
             // TODO: Should I bother to build and pass .json or just pass an array?
             var id = $(evt.target).parents("tr").find("td:eq(0)").text();
 
@@ -36,6 +38,7 @@
                 }
             });
         },
+
         deleteApplication: function (evt) {
             var result = confirm("Are you sure?");
             if (!result) {
@@ -63,7 +66,8 @@
                 });
             }
         },
-        submitApplication: function() {
+
+        submitApplication: function () {
             var jsonArray = $("#frmInput").serializeArray();
             console.log(jsonArray);
 
@@ -90,6 +94,7 @@
                 $().clearForm();
             }, 500);
         },
+
         retrieveApplications: function() {
             $().removeRows();
 
@@ -143,7 +148,8 @@
                             type: "button",
                             class: "btnSmall",
                             name: "btnCommit",
-                            text: "Commit"
+                            text: "Commit",
+                            disabled: "disabled"
                         });
 
                         var btnDelete = $("<button/>", {
