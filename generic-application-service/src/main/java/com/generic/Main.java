@@ -14,6 +14,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.generic.Database.*;
+
 public class Main {
     protected static final String BASE_URI = "http://localhost:80/rest/";
     protected static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
@@ -95,6 +97,7 @@ public class Main {
         getProperties();
         try {
             httpServer.start();
+            databaseConnect();
 
             LOGGER.info("Database Driver: {}", dbDriver);
             LOGGER.info("Database URL: {}", dbUrl);
@@ -108,6 +111,7 @@ public class Main {
         } finally {
             listener.shutdownNow();
             httpServer.shutdownNow();
+            databaseClose();
         }
 
         System.exit(0);

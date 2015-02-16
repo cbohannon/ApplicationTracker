@@ -2,10 +2,7 @@ package com.generic;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,9 +14,8 @@ import com.google.gson.JsonParser;
 
 import com.jooq.tables.records.InformationRecord;
 import org.jooq.*;
-import org.jooq.impl.DSL;
 
-import static com.generic.Main.*;
+import static com.generic.Database.*;
 import static com.jooq.tables.Information.INFORMATION;
 
 @Path("applications")
@@ -32,11 +28,7 @@ public class Resource {
         List<Application> application = new ArrayList<>();
 
         try {
-            Class.forName(getDbDriver()).newInstance();
-            Connection connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbPassword(), getDbUsername());
-
-            DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
-            Result<Record> result = dslContext.select().from(INFORMATION).fetch();
+            Result<Record> result = getDslContext().select().from(INFORMATION).fetch();
 
             for (Record r : result) {
                 application.add(new Application(r.getValue("id").toString(),
@@ -53,9 +45,8 @@ public class Resource {
 
             Main.LOGGER.info(result.size() + " records read.");
 
-            connection.close();
             result.clear();
-        } catch (InstantiationException | SQLException | ClassNotFoundException | IllegalAccessException e) {
+        } catch (Exception e) {
             Main.LOGGER.info(e.getMessage());
         }
 
@@ -86,11 +77,7 @@ public class Resource {
         }
 
         try {
-            Class.forName(getDbDriver()).newInstance();
-            Connection connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbPassword(), getDbUsername());
-            DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
-
-            InsertSetMoreStep<InformationRecord> result = dslContext.insertInto(INFORMATION)
+            InsertSetMoreStep<InformationRecord> result = getDslContext().insertInto(INFORMATION)
                                                         .set(INFORMATION.COMPANY, queryBuilder.get(0))
                                                         .set(INFORMATION.POSITION, queryBuilder.get(1))
                                                         .set(INFORMATION.LOCATION, queryBuilder.get(2))
@@ -105,8 +92,7 @@ public class Resource {
             Main.LOGGER.info("New record inserted.");
 
             result.close();
-            connection.close();
-        } catch (InstantiationException | IllegalAccessException | SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             Main.LOGGER.info(e.getMessage());
         }
 
@@ -120,25 +106,20 @@ public class Resource {
         }
 
         try {
-            Class.forName(getDbDriver()).newInstance();
-            Connection connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbPassword(), getDbUsername());
-            DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
-            InformationRecord fetchedRecord = dslContext.selectFrom(INFORMATION).where(INFORMATION.ID.equal(idValue)).fetchOne();
+            InformationRecord fetchedRecord = getDslContext().selectFrom(INFORMATION).where(INFORMATION.ID.equal(idValue)).fetchOne();
 
             if (fetchedRecord == null) {
                 Main.LOGGER.info("No record to delete.");
-                connection.close();
                 return Response.status(404).build();
             } else {
-                int value = dslContext.delete(INFORMATION).where(INFORMATION.ID.equal(idValue)).execute();
+                int value = getDslContext().delete(INFORMATION).where(INFORMATION.ID.equal(idValue)).execute();
                 if (value == 1) {
                     Main.LOGGER.info("Record {} successfully deleted.", value);
                 }
             }
 
-            connection.close();
             fetchedRecord.reset();
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e) {
+        } catch (Exception e) {
             Main.LOGGER.info(e.getMessage());
         }
 
@@ -156,10 +137,7 @@ public class Resource {
         JsonObject jsonObject = jsonParser.parse(jsonRequest).getAsJsonObject();
 
         try {
-            Class.forName(getDbDriver()).newInstance();
-            Connection connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbPassword(), getDbUsername());
-            DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
-            UpdateConditionStep<InformationRecord> updateRecord = dslContext.update(INFORMATION)
+            UpdateConditionStep<InformationRecord> updateRecord = getDslContext().update(INFORMATION)
                                 .set(INFORMATION.COMPANY, jsonObject.get("company").getAsString())
                                 .set(INFORMATION.POSITION, jsonObject.get("position").getAsString())
                                 .set(INFORMATION.LOCATION, jsonObject.get("location").getAsString())
@@ -174,9 +152,8 @@ public class Resource {
             updateRecord.execute();
             Main.LOGGER.info("Record {}, successfully updated.", idValue);
 
-            connection.close();
             updateRecord.close();
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e) {
+        } catch (Exception e) {
             Main.LOGGER.info(e.getMessage());
         }
 
