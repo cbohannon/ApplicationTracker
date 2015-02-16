@@ -1,8 +1,8 @@
 // TODO: Provide better messaging in the footer
-(function ($) {
+(function($) {
     $.fn.extend({
-        commitApplicationEdits: function (evt) {
-            $(evt.target).parents("tr").find("[name=btnCommit]").prop("disabled", true);
+        commitApplicationEdits: function(evt) {
+            $(evt.target).parents("tr").find("#btnCommit").prop("disabled", true);
 
             // TODO: Should I bother to build and pass .json or just pass an array?
             var id = $(evt.target).parents("tr").find("td:eq(0)").text();
@@ -39,7 +39,7 @@
             });
         },
 
-        deleteApplication: function (evt) {
+        deleteApplication: function(evt) {
             var result = confirm("Are you sure?");
             if (!result) {
                 $("#footerMessage").find("span").remove();
@@ -67,7 +67,7 @@
             }
         },
 
-        submitApplication: function () {
+        submitApplication: function() {
             var jsonArray = $("#frmInput").serializeArray();
             console.log(jsonArray);
 
@@ -105,7 +105,7 @@
                 dataType: "json",
                 cache: false,
                 success: function(data) {
-                    $.each(data, function (outerKey, outerObject) {
+                    $.each(data, function(outerKey, outerObject) {
                         var row = $("<tr>");
                         $.each(outerObject, function(innerKey, innerObject) {
                             switch (innerKey) {
@@ -147,7 +147,7 @@
                         var btnCommit = $("<button/>", {
                             type: "button",
                             class: "btnSmall",
-                            name: "btnCommit",
+                            id: "btnCommit",
                             text: "Commit",
                             disabled: "disabled"
                         });
@@ -155,7 +155,7 @@
                         var btnDelete = $("<button/>", {
                             type: "button",
                             class: "btnSmall",
-                            name: "btnDelete",
+                            id: "btnDelete",
                             text: "Delete"
                         });
 

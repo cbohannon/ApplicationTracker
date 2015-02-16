@@ -19,17 +19,17 @@ $(document).ready(function() {
         $().addApplication();
     });
 
-    $(document).on("click", "[name=btnDelete]", function(evt) {
+    $(document).on("click", "#btnDelete", function(evt) {
         evt.preventDefault();
         $().deleteApplication(evt);
     });
 
-    $(document).on("click", "[name=btnCommit]", function (evt) {
+    $(document).on("click", "#btnCommit", function(evt) {
         evt.preventDefault();
         $().commitApplicationEdits(evt)
     });
 
-    $(document).on("click", ".editable", function (evt) {
+    $(document).on("click", ".editable", function(evt) {
         evt.preventDefault();
         $().editApplication(evt)
     })
