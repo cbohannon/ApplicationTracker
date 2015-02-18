@@ -11,7 +11,11 @@ import java.sql.SQLException;
 import static com.generic.Main.*;
 import static com.jooq.tables.Information.INFORMATION;
 
-public class Database {
+public final class Database {
+    private Database() {
+
+    }
+
     public static DSLContext getDslContext() { return dslContext; }
 
     private static Connection connection;

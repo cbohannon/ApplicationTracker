@@ -16,13 +16,14 @@ import org.slf4j.LoggerFactory;
 
 import static com.generic.Database.*;
 
-public class Main {
+public final class Main {
+    private Main() {
+
+    }
     protected static final String BASE_URI = "http://localhost:80/rest/";
     protected static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-    public static String getDbUrl() {
-        return dbUrl;
-    }
+    public static String getDbUrl() { return dbUrl; }
 
     public static String getDbName() {
         return dbName;
