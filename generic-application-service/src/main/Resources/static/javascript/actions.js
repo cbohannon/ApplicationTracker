@@ -110,10 +110,10 @@
                         $.each(outerObject, function(innerKey, innerObject) {
                             switch (innerKey) {
                                 case "id":
-                                    row.after().append($("<td>").text("#" + innerObject.toString()));
+                                    row.append($("<td>").text("#" + innerObject.toString()));
                                     break;
                                 case "company":
-                                    row.after().append($("<td>").addClass("editable").text(innerObject.toString()));
+                                    row.append($("<td>").addClass("editable").text(innerObject.toString()));
                                     break;
                                 case "position":
                                     row.append($("<td>").addClass("editable").text(innerObject.toString()));
