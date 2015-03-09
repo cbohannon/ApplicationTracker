@@ -26,6 +26,7 @@ public class Resource {
     @GET
     public final Response getAllApplications()
     {
+        // TODO: Why does the first call take over 250ms but subsequent calls take last than 100ms?
         List<Application> application = new ArrayList<>();
 
         try {

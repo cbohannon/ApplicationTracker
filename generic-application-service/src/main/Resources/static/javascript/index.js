@@ -32,5 +32,5 @@ $(document).ready(function() {
     $(document).on("click", ".editable", function(evt) {
         evt.preventDefault();
         $().editApplication(evt)
-    })
+    });
 });
