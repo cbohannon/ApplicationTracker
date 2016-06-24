@@ -174,7 +174,7 @@
                         <!-- Use your username -->
                         <user>root</user>
                         <!-- Use your password -->
-                        <password></password>
+                        <password>root</password>
                     </jdbc>
                     <!-- Generator parameters -->
                     <generator>

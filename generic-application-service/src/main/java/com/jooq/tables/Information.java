@@ -16,7 +16,7 @@ package com.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Information extends org.jooq.impl.TableImpl<com.jooq.tables.records.InformationRecord> {
 
-	private static final long serialVersionUID = 590768947;
+	private static final long serialVersionUID = -2050680683;
 
 	/**
 	 * The reference instance of <code>applications.information</code>
@@ -115,8 +115,16 @@ public class Information extends org.jooq.impl.TableImpl<com.jooq.tables.records
 	 * {@inheritDoc}
 	 */
 	@Override
+	public org.jooq.UniqueKey<com.jooq.tables.records.InformationRecord> getPrimaryKey() {
+		return com.jooq.Keys.KEY_INFORMATION_PRIMARY;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public java.util.List<org.jooq.UniqueKey<com.jooq.tables.records.InformationRecord>> getKeys() {
-		return java.util.Arrays.<org.jooq.UniqueKey<com.jooq.tables.records.InformationRecord>>asList(com.jooq.Keys.KEY_INFORMATION_ID_UNIQUE);
+		return java.util.Arrays.<org.jooq.UniqueKey<com.jooq.tables.records.InformationRecord>>asList(com.jooq.Keys.KEY_INFORMATION_PRIMARY, com.jooq.Keys.KEY_INFORMATION_ID_UNIQUE);
 	}
 
 	/**

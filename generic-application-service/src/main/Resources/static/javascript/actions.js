@@ -21,21 +21,25 @@
 
             $.ajax({
                 type: "PUT",
-                url: "http://localhost:80/rest/applications?id=" + id.replace("#", ""),
+                url: "http://localhost:8181/rest/applications?id=" + id.replace("#", ""),
                 contentType: "application/json; charset=utf-8",
                 data: tableData.toString(),
                 dataType: "json",
                 cache: false,
-                success: function(data) {
-                    $("#footerMessage").find("span").remove();
-                    $("<span>Success! Data submitted.</span>").appendTo("#footerMessage");
-                    console.log("Success! Data submitted: " + data);
-                },
-                error: function(jqXHR) {
-                    $("#footerMessage").find("span").remove();
-                    $("<span>It looks like we had an error.</span>").appendTo("#footerMessage");
-                    console.log("Error message: " + jqXHR.statusText +" code " + jqXHR.status);
-                }
+                success: [
+                        function(data) {
+                        $("#footerMessage").find("span").remove();
+                        $("<span>Success! Data submitted.</span>").appendTo("#footerMessage");
+                        console.log("Success! Data submitted: " + data);
+                    }
+                ],
+                error: [
+                        function(jqXHR) {
+                        $("#footerMessage").find("span").remove();
+                        $("<span>It looks like we had an error.</span>").appendTo("#footerMessage");
+                        console.log("Error message: " + jqXHR.statusText +" code " + jqXHR.status);
+                    }
+                ]
             });
         },
 
@@ -49,20 +53,24 @@
 
                 $.ajax({
                     type: "DELETE",
-                    url: "http://localhost:80/rest/applications?application=" + id.replace("#", ""),
+                    url: "http://localhost:8181/rest/applications?application=" + id.replace("#", ""),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     cache: false,
-                    success: function(data) {
-                        $("#footerMessage").find("span").remove();
-                        $("<span>Success! Data deleted.</span>").appendTo("#footerMessage");
-                        console.log("Success! Data submitted: " + data);
-                    },
-                    error: function(jqXHR) {
-                        $("#footerMessage").find("span").remove();
-                        $("<span>It looks like we had an error.</span>").appendTo("#footerMessage");
-                        console.log("Error message: " + jqXHR.statusText +" code " + jqXHR.status);
-                    }
+                    success: [
+                            function(data) {
+                            $("#footerMessage").find("span").remove();
+                            $("<span>Success! Data deleted.</span>").appendTo("#footerMessage");
+                            console.log("Success! Data submitted: " + data);
+                        }
+                    ],
+                    error: [
+                            function(jqXHR) {
+                            $("#footerMessage").find("span").remove();
+                            $("<span>It looks like we had an error.</span>").appendTo("#footerMessage");
+                            console.log("Error message: " + jqXHR.statusText +" code " + jqXHR.status);
+                        }
+                    ]
                 });
             }
         },
@@ -73,21 +81,25 @@
 
             $.ajax({
                 type: "POST",
-                url: "http://localhost:80/rest/applications",
+                url: "http://localhost:8181/rest/applications",
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(jsonArray),
                 dataType: "json",
                 cache: false,
-                success: function(data) {
-                    $("#footerMessage").find("span").remove();
-                    $("<span>Success! Data submitted.</span>").appendTo("#footerMessage");
-                    console.log("Success! Data submitted: " + data);
-                },
-                error: function(jqXHR) {
-                    $("#footerMessage").find("span").remove();
-                    $("<span>It looks like we had an error.</span>").appendTo("#footerMessage");
-                    console.log("Error message: " + jqXHR.statusText +" code " + jqXHR.status);
-                }
+                success: [
+                        function(data) {
+                        $("#footerMessage").find("span").remove();
+                        $("<span>Success! Data submitted.</span>").appendTo("#footerMessage");
+                        console.log("Success! Data submitted: " + data);
+                    }
+                ],
+                error: [
+                        function(jqXHR) {
+                        $("#footerMessage").find("span").remove();
+                        $("<span>It looks like we had an error.</span>").appendTo("#footerMessage");
+                        console.log("Error message: " + jqXHR.statusText +" code " + jqXHR.status);
+                    }
+                ]
             });
 
             setTimeout(function() {
@@ -100,76 +112,80 @@
 
             $.ajax({
                 type: "GET",
-                url: "http://localhost:80/rest/applications",
+                url: "http://localhost:8181/rest/applications",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 cache: false,
-                success: function(data) {
-                    $.each(data, function(outerKey, outerObject) {
-                        var row = $("<tr>");
-                        $.each(outerObject, function(innerKey, innerObject) {
-                            switch (innerKey) {
-                                case "id":
-                                    row.append($("<td>").text("#" + innerObject.toString()));
-                                    break;
-                                case "company":
-                                    row.append($("<td>").addClass("editable").text(innerObject.toString()));
-                                    break;
-                                case "position":
-                                    row.append($("<td>").addClass("editable").text(innerObject.toString()));
-                                    break;
-                                case "location":
-                                    row.append($("<td>").addClass("editable").text(innerObject.toString()));
-                                    break;
-                                case "dateApplied":
-                                    row.append($("<td>").addClass("editable").text(innerObject.toString()));
-                                    break;
-                                case "contactName":
-                                    row.append($("<td>").addClass("editable").text(innerObject.toString()));
-                                    break;
-                                case "contactMethod":
-                                    row.append($("<td>").addClass("editable").text(innerObject.toString()));
-                                    break;
-                                case "contactedMeFirst":
-                                    row.append($("<td>").addClass("editable").text(innerObject.toString()));
-                                    break;
-                                case "status":
-                                    row.append($("<td>").addClass("editable").text(innerObject.toString()));
-                                    break;
-                                case "notes":
-                                    row.append($("<td>").addClass("wrap").addClass("editable").text(innerObject.toString()));
-                                    break;
-                                default:
-                                    console.log("Error iterating over innerObject: " + innerKey + " " + innerObject);
-                            }
-                        });
+                success: [
+                        function(data) {
+                        $.each(data, function(outerKey, outerObject) {
+                            var row = $("<tr>");
+                            $.each(outerObject, function(innerKey, innerObject) {
+                                switch (innerKey) {
+                                    case "id":
+                                        row.append($("<td>").text("#" + innerObject.toString()));
+                                        break;
+                                    case "company":
+                                        row.append($("<td>").addClass("editable").text(innerObject.toString()));
+                                        break;
+                                    case "position":
+                                        row.append($("<td>").addClass("editable").text(innerObject.toString()));
+                                        break;
+                                    case "location":
+                                        row.append($("<td>").addClass("editable").text(innerObject.toString()));
+                                        break;
+                                    case "dateApplied":
+                                        row.append($("<td>").addClass("editable").text(innerObject.toString()));
+                                        break;
+                                    case "contactName":
+                                        row.append($("<td>").addClass("editable").text(innerObject.toString()));
+                                        break;
+                                    case "contactMethod":
+                                        row.append($("<td>").addClass("editable").text(innerObject.toString()));
+                                        break;
+                                    case "contactedMeFirst":
+                                        row.append($("<td>").addClass("editable").text(innerObject.toString()));
+                                        break;
+                                    case "status":
+                                        row.append($("<td>").addClass("editable").text(innerObject.toString()));
+                                        break;
+                                    case "notes":
+                                        row.append($("<td>").addClass("wrap").addClass("editable").text(innerObject.toString()));
+                                        break;
+                                    default:
+                                        console.log("Error iterating over innerObject: " + innerKey + " " + innerObject);
+                                }
+                            });
 
-                        var btnCommit = $("<button/>", {
-                            type: "button",
-                            class: "btnSmall",
-                            id: "btnCommit",
-                            text: "Commit",
-                            disabled: "disabled"
-                        });
+                            var btnCommit = $("<button/>", {
+                                type: "button",
+                                class: "btnSmall",
+                                id: "btnCommit",
+                                text: "Commit",
+                                disabled: "disabled"
+                            });
 
-                        var btnDelete = $("<button/>", {
-                            type: "button",
-                            class: "btnSmall",
-                            id: "btnDelete",
-                            text: "Delete"
-                        });
+                            var btnDelete = $("<button/>", {
+                                type: "button",
+                                class: "btnSmall",
+                                id: "btnDelete",
+                                text: "Delete"
+                            });
 
-                        row.append($("<td>").append(btnCommit).append(" ").append(btnDelete));
-                        $("#tblApplications").append(row);
-                    });
-                    $("#footerMessage").find("span").remove();
-                    $("<span>Success! Data retrieved.</span>").appendTo("#footerMessage");
-                },
-                error: function(jqXHR) {
-                    $("#footerMessage").find("span").remove();
-                    $("<span>It looks like we had an error.</span>").appendTo("#footerMessage");
-                    console.log("Error message: " + jqXHR.statusText +" code " + jqXHR.status);
-                }
+                            row.append($("<td>").append(btnCommit).append(" ").append(btnDelete));
+                            $("#tblApplications").append(row);
+                        });
+                        $("#footerMessage").find("span").remove();
+                        $("<span>Success! Data retrieved.</span>").appendTo("#footerMessage");
+                    }
+                ],
+                error: [
+                        function(jqXHR) {
+                        $("#footerMessage").find("span").remove();
+                        $("<span>It looks like we had an error.</span>").appendTo("#footerMessage");
+                        console.log("Error message: " + jqXHR.statusText +" code " + jqXHR.status);
+                    }
+                ]
             });
         }
     });

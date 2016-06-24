@@ -20,7 +20,7 @@ public final class Main {
     private Main() {
 
     }
-    protected static final String BASE_URI = "http://localhost:80/rest/";
+    protected static final String BASE_URI = "http://localhost:8181/rest/";
     protected static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static String getDbUrl() { return dbUrl; }

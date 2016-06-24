@@ -54,6 +54,8 @@ INSTALLATION
 CONFIGURATION
 -------------
 * Be sure to edit your database connection information in the .pom file and the config.properties file.
+* Grizzly listens on port 8080 and be sure to check if something is on the port used for the BASE_URI (port 80) and
+* check all the URL's in the source code as well. The BASE_URI and the URL need to use the same port.
 
 TROUBLESHOOTING
 ---------------

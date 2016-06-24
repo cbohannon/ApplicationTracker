@@ -27,6 +27,7 @@ public class Keys {
 	// UNIQUE and PRIMARY KEY definitions
 	// -------------------------------------------------------------------------
 
+	public static final org.jooq.UniqueKey<com.jooq.tables.records.InformationRecord> KEY_INFORMATION_PRIMARY = UniqueKeys0.KEY_INFORMATION_PRIMARY;
 	public static final org.jooq.UniqueKey<com.jooq.tables.records.InformationRecord> KEY_INFORMATION_ID_UNIQUE = UniqueKeys0.KEY_INFORMATION_ID_UNIQUE;
 
 	// -------------------------------------------------------------------------
@@ -43,6 +44,7 @@ public class Keys {
 	}
 
 	private static class UniqueKeys0 extends org.jooq.impl.AbstractKeys {
+		public static final org.jooq.UniqueKey<com.jooq.tables.records.InformationRecord> KEY_INFORMATION_PRIMARY = createUniqueKey(com.jooq.tables.Information.INFORMATION, com.jooq.tables.Information.INFORMATION.ID);
 		public static final org.jooq.UniqueKey<com.jooq.tables.records.InformationRecord> KEY_INFORMATION_ID_UNIQUE = createUniqueKey(com.jooq.tables.Information.INFORMATION, com.jooq.tables.Information.INFORMATION.ID);
 	}
 }
