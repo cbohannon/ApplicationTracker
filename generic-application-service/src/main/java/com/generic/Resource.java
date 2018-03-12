@@ -1,5 +1,13 @@
 package com.generic;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.jooq.tables.records.InformationRecord;
+import org.jooq.Record;
+import org.jooq.Result;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.sql.Date;
@@ -7,17 +15,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import com.jooq.tables.records.InformationRecord;
-import org.jooq.*;
-
-import static com.generic.Database.*;
+import static com.generic.Database.getDslContext;
 import static com.jooq.tables.Information.INFORMATION;
-import static org.jooq.impl.DSL.tableByName;
 
 @Path("applications")
 @Produces("application/json")
@@ -30,7 +29,7 @@ public class Resource {
         List<Application> application = new ArrayList<>();
 
         try {
-            Result<Record> result = getDslContext().select().from(tableByName("INFORMATION")).fetch();
+            Result<Record> result = getDslContext().select().from("INFORMATION").fetch();
 
             for (Record r : result) {
                 application.add(new Application(r.getValue("id").toString(),

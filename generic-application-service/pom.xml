@@ -29,7 +29,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.34</version>
+            <version>6.0.6</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
@@ -43,7 +43,7 @@
         <dependency>
             <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-http-servlet</artifactId>
-            <version>2.3.18</version>
+            <version>2.3.28</version>
         </dependency>
          <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
@@ -52,32 +52,32 @@
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
-            <version>3.5.1</version>
+            <version>3.10.5</version>
         </dependency>
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq-meta</artifactId>
-            <version>3.5.1</version>
+            <version>3.10.5</version>
         </dependency>
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq-codegen</artifactId>
-            <version>3.5.1</version>
+            <version>3.10.5</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.3.1</version>
+            <version>2.8.2</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.10</version>
+            <version>1.7.22</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.10</version>
+            <version>1.7.22</version>
         </dependency>
         <!-- Testing dependencies -->
         <dependency>
@@ -147,7 +147,7 @@
                 <!-- Specify the maven code generator plugin -->
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq-codegen-maven</artifactId>
-                <version>3.5.1</version>
+                <version>3.10.5</version>
                 <!-- The plugin should hook into the generate goal -->
                 <executions>
                     <execution>
@@ -161,7 +161,7 @@
                     <dependency>
                         <groupId>mysql</groupId>
                         <artifactId>mysql-connector-java</artifactId>
-                        <version>5.1.34</version>
+                        <version>6.0.6</version>
                     </dependency>
                 </dependencies>
                 <!-- Specify the plugin configuration.
@@ -169,8 +169,8 @@
                 <configuration>
                     <!-- JDBC connection parameters -->
                     <jdbc>
-                        <driver>com.mysql.jdbc.Driver</driver>
-                        <url>jdbc:mysql://localhost:3306/</url>
+                        <driver>com.mysql.cj.jdbc.Driver</driver>
+                        <url>jdbc:mysql://localhost:3306/?useSSL=false</url>
                         <!-- Use your username -->
                         <user>root</user>
                         <!-- Use your password -->
@@ -178,7 +178,7 @@
                     </jdbc>
                     <!-- Generator parameters -->
                     <generator>
-                        <name>org.jooq.util.DefaultGenerator</name>
+                        <name>org.jooq.util.JavaGenerator</name>
                         <database>
                             <name>org.jooq.util.mysql.MySQLDatabase</name>
                             <includes>.*</includes>
