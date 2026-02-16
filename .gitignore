@@ -1,5 +1,14 @@
 # IDE
 .idea/
+*.iml
+*.iws
+
+# Maven
+log/
+target/
+
+# jOOQ generated code
+generic-application-service/src/main/java/com/jooq/
 
 # Claude Code worktrees
 .claude/
