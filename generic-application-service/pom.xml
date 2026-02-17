@@ -208,10 +208,8 @@
                     <jdbc>
                         <driver>com.mysql.cj.jdbc.Driver</driver>
                         <url>jdbc:mysql://localhost:3306/?useSSL=false</url>
-                        <!-- Use your username -->
-                        <user>YOURUSERNAME</user>
-                        <!-- Use your password -->
-                        <password>YOURPASSWORD</password>
+                        <user>${db.username}</user>
+                        <password>${db.password}</password>
                     </jdbc>
                     <!-- Generator parameters -->
                     <generator>
