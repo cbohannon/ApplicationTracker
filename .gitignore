@@ -7,6 +7,9 @@
 log/
 target/
 
+# Configuration (use config.properties.example as a template)
+**/config.properties
+
 # jOOQ generated code
 generic-application-service/src/main/java/com/jooq/
 
