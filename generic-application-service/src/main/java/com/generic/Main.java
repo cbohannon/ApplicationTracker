@@ -104,8 +104,8 @@ public final class Main {
             LOGGER.info("Database URL: {}", dbUrl);
             LOGGER.info("Database Name: {}", dbName);
 
-            LOGGER.info(String.format("Jersey app started with WADL available at " + "%sapplication.wadl", BASE_URI));
-            LOGGER.info("Jersey app started with base URI at " + BASE_URI);
+            LOGGER.info("WADL available at {}application.wadl", BASE_URI);
+            LOGGER.info("Application available at http://localhost:8181/");
             LOGGER.info("Hit enter to stop the app...");
 
             LOGGER.info(System.in.read() + " bytes read.");
