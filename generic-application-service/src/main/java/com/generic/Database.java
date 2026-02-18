@@ -1,12 +1,10 @@
 package com.generic;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 import static com.generic.Main.*;
 import static com.jooq.tables.Information.INFORMATION;
@@ -18,27 +16,38 @@ public final class Database {
 
     public static DSLContext getDslContext() { return dslContext; }
 
-    private static Connection connection;
+    private static HikariDataSource dataSource;
     private static DSLContext dslContext;
 
     public static void databaseConnect() {
         try {
-            Class.forName(getDbDriver()).newInstance();
-            connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbUsername(), getDbPassword());
-            dslContext = DSL.using(connection, SQLDialect.MYSQL);
-            // Let's make sure when can actually query the database
+            HikariConfig config = new HikariConfig();
+            config.setJdbcUrl(getDbUrl() + getDbName());
+            config.setUsername(getDbUsername());
+            config.setPassword(getDbPassword());
+            config.setDriverClassName(getDbDriver());
+
+            // Pool configuration
+            config.setMaximumPoolSize(10);
+            config.setMinimumIdle(2);
+            config.setConnectionTimeout(30000);
+            config.setIdleTimeout(600000);
+            config.setMaxLifetime(1800000);
+
+            dataSource = new HikariDataSource(config);
+            dslContext = DSL.using(dataSource, SQLDialect.MYSQL);
+
+            // Let's make sure we can actually query the database
             LOGGER.info("{} records initialized.", dslContext.select(INFORMATION.fields()).from(INFORMATION).execute());
-        } catch (InstantiationException | SQLException | ClassNotFoundException | IllegalAccessException e) {
+        } catch (Exception e) {
             LOGGER.info(e.getMessage());
         }
     }
 
     public static void databaseClose() {
-        try {
-            connection.close();
-            dslContext = null;
-        } catch (SQLException e) {
-            LOGGER.info(e.getMessage());
+        if (dataSource != null) {
+            dataSource.close();
         }
+        dslContext = null;
     }
 }
