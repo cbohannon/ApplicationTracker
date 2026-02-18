@@ -24,7 +24,7 @@ public final class Database {
     public static void databaseConnect() {
         try {
             Class.forName(getDbDriver()).newInstance();
-            connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbPassword(), getDbUsername());
+            connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbUsername(), getDbPassword());
             dslContext = DSL.using(connection, SQLDialect.MYSQL);
             // Let's make sure when can actually query the database
             LOGGER.info("{} records initialized.", dslContext.select(INFORMATION.fields()).from(INFORMATION).execute());
