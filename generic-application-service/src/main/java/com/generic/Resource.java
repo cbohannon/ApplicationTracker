@@ -42,7 +42,7 @@ public class Resource {
                                                 r.getValue("notes").toString()));
             }
 
-            Main.LOGGER.info(result.size() + " records read.");
+            Main.LOGGER.info("{} records read.", result.size());
 
             result.clear();
         } catch (Exception e) {
@@ -60,10 +60,9 @@ public class Resource {
             return Response.status(400).build();
         }
 
-        JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject;
         try {
-            jsonObject = jsonParser.parse(jsonRequest).getAsJsonObject();
+            jsonObject = JsonParser.parseString(jsonRequest).getAsJsonObject();
         } catch (Exception e) {
             Main.LOGGER.info("Invalid POST request body: {}", e.getMessage());
             return Response.status(400).build();
@@ -123,8 +122,7 @@ public class Resource {
             return Response.status(400).build();
         }
 
-        JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObject = jsonParser.parse(jsonRequest).getAsJsonObject();
+        JsonObject jsonObject = JsonParser.parseString(jsonRequest).getAsJsonObject();
 
         try {
             getDslContext().update(INFORMATION)
@@ -148,17 +146,17 @@ public class Resource {
         return Response.status(204).build();
     }
 
-    private final class Application {
-        String id = "";
-        String company = "";
-        String position = "";
-        String location = "";
-        String dateApplied = "";
-        String contactName = "";
-        String contactMethod = "";
-        String contactedMeFirst = "";
-        String status = "";
-        String notes = "";
+    private static final class Application {
+        String id;
+        String company;
+        String position;
+        String location;
+        String dateApplied;
+        String contactName;
+        String contactMethod;
+        String contactedMeFirst;
+        String status;
+        String notes;
 
         private Application(String id, String company, String position, String location, String dateApplied,
                             String contactName, String contactMethod, String contactedMeFirst, String status,
