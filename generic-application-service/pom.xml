@@ -8,6 +8,7 @@
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>generic-application-service</name>
+    <description>Generic application tracking REST service</description>
 
     <dependencyManagement>
         <dependencies>
