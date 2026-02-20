@@ -20,8 +20,8 @@ public final class Main {
     private Main() {
 
     }
-    protected static final String BASE_URI = "http://localhost:8181/rest/";
-    protected static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    static final String BASE_URI = "http://localhost:8181/rest/";
+    static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static String getDbUrl() { return dbUrl; }
 
@@ -45,10 +45,6 @@ public final class Main {
         return jsonInput;
     }
 
-    public static String getJsonValidate() {
-        return jsonValidate;
-    }
-
     public static String getJsonUpdate() {
         return jsonUpdate;
     }
@@ -59,7 +55,6 @@ public final class Main {
     private static String dbUsername;
     private static String dbPassword;
     private static String jsonInput;
-    private static String jsonValidate;
     private static String jsonUpdate;
 
     public static HttpServer startServer() {
@@ -68,10 +63,9 @@ public final class Main {
     }
 
     public static void getProperties() throws IOException {
-        InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("config.properties");
-        Properties properties = new Properties();
 
-        try {
+        try (InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("config.properties")) {
+            Properties properties = new Properties();
             properties.load(inputStream);
             dbDriver = properties.getProperty("db.driver");
             dbUrl = properties.getProperty("db.url");
@@ -79,12 +73,7 @@ public final class Main {
             dbUsername = properties.getProperty("db.username");
             dbPassword = properties.getProperty("db.password");
             jsonInput = properties.getProperty("json.junit");
-            jsonValidate = properties.getProperty("json.junit.validate");
             jsonUpdate = properties.getProperty("json.junit.update");
-        } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
         }
     }
 
@@ -108,7 +97,7 @@ public final class Main {
             LOGGER.info("Application available at http://localhost:8181/");
             LOGGER.info("Hit enter to stop the app...");
 
-            LOGGER.info(System.in.read() + " bytes read.");
+            LOGGER.info("{} bytes read.", System.in.read());
         } finally {
             listener.shutdownNow();
             httpServer.shutdownNow();
