@@ -5,7 +5,7 @@ A simple web application for tracking employment inquiries. Built with Java, Jer
 ## Tech Stack
 
 - **Java 11** - Application runtime
-- **Jersey 2.30.1** - RESTful web services framework
+- **Jersey 2.47** - RESTful web services framework
 - **Grizzly 2.4.4** - HTTP server
 - **jOOQ 3.10.5** - Type-safe SQL query building
 - **HikariCP 4.0.3** - JDBC connection pooling
