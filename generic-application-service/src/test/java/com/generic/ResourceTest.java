@@ -14,7 +14,6 @@ import com.jooq.tables.records.InformationRecord;
 import org.glassfish.grizzly.http.server.HttpServer;
 
 import org.jooq.DSLContext;
-import org.jooq.InsertSetMoreStep;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.junit.After;
@@ -37,33 +36,44 @@ public class ResourceTest {
     private HttpServer server;
     private WebTarget target;
     private String path = "applications";
+    private Integer testRecordId;
 
     @Before
     public void setUp() throws Exception {
         server = Main.startServer();
         Main.getProperties();
+        Database.databaseConnect();
         Client client = ClientBuilder.newClient();
         target = client.target(Main.BASE_URI);
 
-        // Let's go ahead and insert some test data
         try {
             Class.forName(getDbDriver()).newInstance();
-            Connection connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbPassword(), getDbUsername());
+            Connection connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbUsername(), getDbPassword());
             DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
 
-            InsertSetMoreStep<InformationRecord> result = dslContext.insertInto(INFORMATION)
-                                                                    .set(INFORMATION.COMPANY, "JUnit Test Company")
-                                                                    .set(INFORMATION.POSITION, "JUnit Test Position")
-                                                                    .set(INFORMATION.LOCATION, "JUnit Test Location")
-                                                                    .set(INFORMATION.DATEAPPLIED, Date.valueOf("2015-1-1"))
-                                                                    .set(INFORMATION.CONTACTNAME, "JUnit Test Name")
-                                                                    .set(INFORMATION.CONTACTMETHOD, "JUnit Test Method")
-                                                                    .set(INFORMATION.CONTACTEDMEFIRST, "Yes")
-                                                                    .set(INFORMATION.STATUS, "Open")
-                                                                    .set(INFORMATION.NOTES, "JUnit testing action!");
+            dslContext.insertInto(INFORMATION)
+                      .set(INFORMATION.COMPANY, "JUnit Test Company")
+                      .set(INFORMATION.POSITION, "JUnit Test Position")
+                      .set(INFORMATION.LOCATION, "JUnit Test Location")
+                      .set(INFORMATION.DATEAPPLIED, Date.valueOf("2015-01-01"))
+                      .set(INFORMATION.CONTACTNAME, "JUnit Test Name")
+                      .set(INFORMATION.CONTACTMETHOD, "JUnit Test Method")
+                      .set(INFORMATION.CONTACTEDMEFIRST, "Yes")
+                      .set(INFORMATION.STATUS, "Open")
+                      .set(INFORMATION.NOTES, "JUnit testing action!")
+                      .execute();
 
-            result.execute();
-            result.close();
+            // Capture the id so tests can reference this specific record
+            InformationRecord insertedRecord = dslContext.selectFrom(INFORMATION)
+                                                         .where(INFORMATION.COMPANY.equal("JUnit Test Company"))
+                                                         .and(INFORMATION.POSITION.equal("JUnit Test Position"))
+                                                         .orderBy(INFORMATION.ID.desc())
+                                                         .limit(1)
+                                                         .fetchOne();
+            if (insertedRecord != null) {
+                testRecordId = insertedRecord.getId();
+            }
+
             connection.close();
         } catch (InstantiationException | IllegalAccessException | SQLException | ClassNotFoundException e) {
             Main.LOGGER.info(e.getMessage());
@@ -88,29 +98,60 @@ public class ResourceTest {
 
         JsonParser jsonParser = new JsonParser();
         JsonArray jsonArray = jsonParser.parse(responseMsg).getAsJsonArray();
-        JsonObject jsonCompareObject = (JsonObject) jsonParser.parse(getJsonValidate());
 
-        // Check to make sure the test data is present in the return string
-        for (int index = 0; index < jsonArray.size(); index ++) {
+        boolean found = false;
+        for (int index = 0; index < jsonArray.size(); index++) {
             JsonObject jsonObject = jsonArray.get(index).getAsJsonObject();
-            if (jsonObject.equals(jsonCompareObject)) {
-                assertThat(jsonObject, is(jsonCompareObject));
+            if ("JUnit Test Company".equals(jsonObject.get("company").getAsString()) &&
+                "JUnit Test Position".equals(jsonObject.get("position").getAsString())) {
+                found = true;
+                assertEquals("JUnit Test Location", jsonObject.get("location").getAsString());
+                assertEquals("JUnit Test Name", jsonObject.get("contactName").getAsString());
+                break;
             }
         }
+
+        assertTrue("Test record inserted in @Before should appear in GET response", found);
     }
 
     @Test
-    public void testPostNewApplicationData() {
+    public void testPostNewApplicationData() throws Exception {
         StatusType statusType = target.path(path).request(MediaType.APPLICATION_JSON_TYPE)
-                                                           .post(Entity.json(getJsonInput())).getStatusInfo();
+                                                 .post(Entity.json(getJsonInput())).getStatusInfo();
 
         assertThat(statusType.getStatusCode(), is(204));
+
+        // Verify the record was actually inserted into the database with the correct values
+        Connection connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbUsername(), getDbPassword());
+        DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
+
+        InformationRecord record = dslContext.selectFrom(INFORMATION)
+                                             .where(INFORMATION.COMPANY.equal("JUnit Test Company"))
+                                             .and(INFORMATION.NOTES.equal("JUnit testing action!"))
+                                             .orderBy(INFORMATION.ID.desc())
+                                             .limit(1)
+                                             .fetchOne();
+
+        assertNotNull("POST should have inserted a record into the database", record);
+        assertEquals("JUnit Test Position", record.getPosition());
+        assertEquals("JUnit Test Location", record.getLocation());
+        assertEquals("JUnit Test Name", record.getContactname());
+
+        connection.close();
     }
 
     @Test
     public void testPostNewApplicationResponse400() {
         StatusType statusType = target.path(path).request(MediaType.APPLICATION_JSON_TYPE)
-                                                           .post(Entity.json("")).getStatusInfo();
+                                                 .post(Entity.json("")).getStatusInfo();
+        assertThat(statusType.getStatusCode(), is(400));
+    }
+
+    @Test
+    public void testPostWithOldArrayFormatReturns400() {
+        String oldFormat = "[{\"name\":\"company\",\"value\":\"Test Company\"}]";
+        StatusType statusType = target.path(path).request(MediaType.APPLICATION_JSON_TYPE)
+                                                 .post(Entity.json(oldFormat)).getStatusInfo();
         assertThat(statusType.getStatusCode(), is(400));
     }
 
@@ -118,7 +159,7 @@ public class ResourceTest {
     public void testDeleteApplication() throws UnsupportedEncodingException {
         try {
             Class.forName(getDbDriver()).newInstance();
-            Connection connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbPassword(), getDbUsername());
+            Connection connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbUsername(), getDbPassword());
             DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
 
             InformationRecord fetchedRecord = dslContext.selectFrom(INFORMATION)
@@ -131,8 +172,8 @@ public class ResourceTest {
                 assertThat("Record size should be 1.", fetchedRecord.size(), greaterThan(0));
             } else {
                 StatusType statusType = target.path(path).queryParam("application", idValue)
-                                                                   .request(MediaType.APPLICATION_JSON_TYPE)
-                                                                   .delete().getStatusInfo();
+                                                         .request(MediaType.APPLICATION_JSON_TYPE)
+                                                         .delete().getStatusInfo();
                 assertThat(statusType.getStatusCode(), is(204));
             }
 
@@ -151,29 +192,36 @@ public class ResourceTest {
     }
 
     @Test
-    public void testUpdateApplication() {
-        // TODO: I should probably query the database directly to check the update occurred
-        StatusType statusTypeFirst = target.path(path).queryParam("id", "14")
-                                                                .request(MediaType.APPLICATION_JSON_TYPE)
-                                                                .put(Entity.json(getJsonUpdate()))
-                                                                .getStatusInfo();
-        assertThat(statusTypeFirst.getStatusCode(), is(204));
+    public void testUpdateApplication() throws Exception {
+        assertNotNull("testRecordId must be set in @Before to run this test", testRecordId);
 
-        // Let's go ahead and set the record back to the original state
-        StatusType statusTypeSecond = target.path(path).queryParam("id", "14")
-                                                                .request(MediaType.APPLICATION_JSON_TYPE)
-                                                                .put(Entity.json(getJsonValidate()))
-                                                                .getStatusInfo();
-        assertThat(statusTypeSecond.getStatusCode(), is(204));
+        StatusType statusType = target.path(path).queryParam("id", testRecordId)
+                                                 .request(MediaType.APPLICATION_JSON_TYPE)
+                                                 .put(Entity.json(getJsonUpdate()))
+                                                 .getStatusInfo();
+        assertThat(statusType.getStatusCode(), is(204));
+
+        // Verify the update was actually applied in the database
+        Connection connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbUsername(), getDbPassword());
+        DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
+
+        InformationRecord record = dslContext.selectFrom(INFORMATION)
+                                             .where(INFORMATION.ID.equal(testRecordId))
+                                             .fetchOne();
+
+        assertNotNull("Updated record should still exist in the database", record);
+        assertEquals("No", record.getContactedmefirst());
+        assertEquals("Closed", record.getStatus());
+
+        connection.close();
     }
 
     @Test
     public void testUpdateApplication400() {
         StatusType statusType = target.path(path).queryParam("id", "")
-                                                           .request(MediaType.APPLICATION_JSON_TYPE)
-                                                           .put(Entity.json(getJsonValidate()))
-                                                           .getStatusInfo();
-
+                                                 .request(MediaType.APPLICATION_JSON_TYPE)
+                                                 .put(Entity.json(getJsonUpdate()))
+                                                 .getStatusInfo();
         assertThat(statusType.getStatusCode(), is(400));
     }
 
@@ -181,14 +229,14 @@ public class ResourceTest {
     public void tearDown() throws Exception {
         try {
             Class.forName(getDbDriver()).newInstance();
-            Connection connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbPassword(), getDbUsername());
+            Connection connection = DriverManager.getConnection(getDbUrl() + getDbName(), getDbUsername(), getDbPassword());
             DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
 
-            // Now we'll just make sure the database is "clean"
+            // Delete test records inserted via the POST endpoint (matched by field values)
             dslContext.delete(INFORMATION).where(INFORMATION.COMPANY.equal("JUnit Test Company"))
                                           .and(INFORMATION.POSITION.equal("JUnit Test Position"))
                                           .and(INFORMATION.LOCATION.equal("JUnit Test Location"))
-                                          .and(INFORMATION.DATEAPPLIED.equal(Date.valueOf("2015-1-1")))
+                                          .and(INFORMATION.DATEAPPLIED.equal(Date.valueOf("2015-01-01")))
                                           .and(INFORMATION.CONTACTNAME.equal("JUnit Test Name"))
                                           .and(INFORMATION.CONTACTMETHOD.equal("JUnit Test Method"))
                                           .and(INFORMATION.CONTACTEDMEFIRST.equal("Yes"))
@@ -196,11 +244,18 @@ public class ResourceTest {
                                           .and(INFORMATION.NOTES.equal("JUnit testing action!"))
                                           .execute();
 
+            // Delete the @Before record by id in case it was modified by testUpdateApplication
+            if (testRecordId != null) {
+                dslContext.delete(INFORMATION).where(INFORMATION.ID.equal(testRecordId)).execute();
+                testRecordId = null;
+            }
+
             connection.close();
         } catch (InstantiationException | IllegalAccessException | SQLException | ClassNotFoundException e) {
             Main.LOGGER.info(e.getMessage());
         }
 
+        Database.databaseClose();
         server.shutdownNow();
     }
 }
