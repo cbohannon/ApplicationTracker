@@ -21,18 +21,7 @@ public final class Database {
 
     public static void databaseConnect() {
         try {
-            HikariConfig config = new HikariConfig();
-            config.setJdbcUrl(getDbUrl() + getDbName());
-            config.setUsername(getDbUsername());
-            config.setPassword(getDbPassword());
-            config.setDriverClassName(getDbDriver());
-
-            // Pool configuration
-            config.setMaximumPoolSize(10);
-            config.setMinimumIdle(2);
-            config.setConnectionTimeout(30000);
-            config.setIdleTimeout(600000);
-            config.setMaxLifetime(1800000);
+            HikariConfig config = getHikariConfig();
 
             dataSource = new HikariDataSource(config);
             dslContext = DSL.using(dataSource, SQLDialect.MYSQL);
@@ -42,6 +31,22 @@ public final class Database {
         } catch (Exception e) {
             LOGGER.info(e.getMessage());
         }
+    }
+
+    private static HikariConfig getHikariConfig() {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(getDbUrl() + getDbName());
+        config.setUsername(getDbUsername());
+        config.setPassword(getDbPassword());
+        config.setDriverClassName(getDbDriver());
+
+        // Pool configuration
+        config.setMaximumPoolSize(10);
+        config.setMinimumIdle(2);
+        config.setConnectionTimeout(30000);
+        config.setIdleTimeout(600000);
+        config.setMaxLifetime(1800000);
+        return config;
     }
 
     public static void databaseClose() {
