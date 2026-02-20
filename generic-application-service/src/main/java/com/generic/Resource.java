@@ -1,7 +1,6 @@
 package com.generic;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.jooq.tables.records.InformationRecord;
@@ -12,7 +11,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import static com.generic.Database.getDslContext;
@@ -63,30 +61,26 @@ public class Resource {
         }
 
         JsonParser jsonParser = new JsonParser();
-        JsonArray jsonArray = jsonParser.parse(jsonRequest).getAsJsonArray();
-
-        LinkedList<String> queryBuilder = new LinkedList<>();
-
-        for (int index = 0; index < jsonArray.size(); index ++) {
-            JsonObject jsonObject = jsonArray.get(index).getAsJsonObject();
-
-            String key = jsonObject.get("name").getAsString();
-            String value = jsonObject.get("value").getAsString();
-            Main.LOGGER.debug("jsonObject Key: {}, jsonObject Value: {}", key, value);
-
-            queryBuilder.add(index, value);
+        JsonObject jsonObject;
+        try {
+            jsonObject = jsonParser.parse(jsonRequest).getAsJsonObject();
+        } catch (Exception e) {
+            Main.LOGGER.info("Invalid POST request body: {}", e.getMessage());
+            return Response.status(400).build();
         }
 
         try {
-            getDslContext().insertInto(INFORMATION).set(INFORMATION.COMPANY, queryBuilder.get(0))
-                                                   .set(INFORMATION.POSITION, queryBuilder.get(1))
-                                                   .set(INFORMATION.LOCATION, queryBuilder.get(2))
-                                                   .set(INFORMATION.DATEAPPLIED, Date.valueOf(queryBuilder.get(3)))
-                                                   .set(INFORMATION.CONTACTNAME, queryBuilder.get(4))
-                                                   .set(INFORMATION.CONTACTMETHOD, queryBuilder.get(5))
-                                                   .set(INFORMATION.CONTACTEDMEFIRST, queryBuilder.get(6))
-                                                   .set(INFORMATION.STATUS, queryBuilder.get(7))
-                                                   .set(INFORMATION.NOTES, queryBuilder.get(8)).execute();
+            getDslContext().insertInto(INFORMATION)
+                           .set(INFORMATION.COMPANY, jsonObject.get("company").getAsString())
+                           .set(INFORMATION.POSITION, jsonObject.get("position").getAsString())
+                           .set(INFORMATION.LOCATION, jsonObject.get("location").getAsString())
+                           .set(INFORMATION.DATEAPPLIED, Date.valueOf(jsonObject.get("dateApplied").getAsString()))
+                           .set(INFORMATION.CONTACTNAME, jsonObject.get("contactName").getAsString())
+                           .set(INFORMATION.CONTACTMETHOD, jsonObject.get("contactMethod").getAsString())
+                           .set(INFORMATION.CONTACTEDMEFIRST, jsonObject.get("contactedMeFirst").getAsString())
+                           .set(INFORMATION.STATUS, jsonObject.get("status").getAsString())
+                           .set(INFORMATION.NOTES, jsonObject.get("notes").getAsString())
+                           .execute();
 
             Main.LOGGER.info("New record inserted.");
         } catch (Exception e) {

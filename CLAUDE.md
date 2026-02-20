@@ -45,14 +45,14 @@ The application is a single-module Maven project (Java 11) with three main class
 
 The `com.jooq` package contains jOOQ-generated code representing the `applications.information` table. **Do not edit these files manually** — they are regenerated whenever `mvn compile` runs (the jOOQ codegen plugin is bound to the `generate` goal in the compile phase).
 
-## REST API Quirk
+## REST API
 
-POST and PUT use different JSON shapes:
-- **POST** receives a JSON array of `{"name": "fieldName", "value": "fieldValue"}` objects (HTML form `.serializeArray()` format). Field order matters — values are pulled by index position (0–8).
-- **PUT** receives a flat JSON object with named keys.
+Both POST and PUT accept a flat JSON object with named keys matching the database column names (`company`, `position`, `location`, `dateApplied`, `contactName`, `contactMethod`, `contactedMeFirst`, `status`, `notes`). POST returns 400 for a missing or malformed body.
 
 ## Tests
 
-`ResourceTest` runs integration tests against a live MySQL database — it is not a unit test suite. The `@Before` setup inserts a known test record and `@After` cleans it up.
+`ResourceTest` runs integration tests against a live MySQL database — it is not a unit test suite. The `@Before` setup inserts a known test record, captures its auto-generated `id` as `testRecordId`, and `@After` cleans up by both field values and `testRecordId` (needed if a test modifies the record).
 
-`testUpdateApplication` uses a **hardcoded id=14** and expects a "Permanent Test Company" record to already exist in the database. The `testGetAllApplicationsData` test similarly validates against the `json.junit.validate` fixture, which references this same permanent record.
+`Main.startServer()` does not call `Database.databaseConnect()` — tests must call it explicitly in `@Before` (after `Main.getProperties()`) and `Database.databaseClose()` in `@After`, otherwise the server's `dslContext` is null and all DB operations silently fail.
+
+The `json.junit` fixture in `config.properties` must be a flat JSON object matching the POST format above.

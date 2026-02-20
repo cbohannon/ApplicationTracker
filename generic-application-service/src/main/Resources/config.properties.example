@@ -6,11 +6,7 @@ db.username=yourusername
 db.password=yourpassword
 
 #JSON for testing
-json.junit=[{"name":"companyInput","value":"JUnit Test Company"},{"name":"positionInput","value":"JUnit Test Position"}, \
-                 {"name":"locationInput","value":"JUnit Test Location"},{"name":"appliedInput","value":"2015-1-1"},      \
-                 {"name":"nameInput","value":"JUnit Test Name"},{"name":"methodInput","value":"JUnit Test Method"},      \
-                 {"name":"contactedInput","value":"Yes"},{"name":"statusInput","value":"Open"},                          \
-                 {"name":"notesInput","value":"JUnit testing action!"}]
+json.junit={"company":"JUnit Test Company","position":"JUnit Test Position","location":"JUnit Test Location","dateApplied":"2015-01-01","contactName":"JUnit Test Name","contactMethod":"JUnit Test Method","contactedMeFirst":"Yes","status":"Open","notes":"JUnit testing action!"}
 json.junit.validate={"company": "Permanent Test Company","position": "Permanent Test Position","location": \
                      "Permanent Test Location","dateApplied": "2015-01-01","contactName":                  \
                      "Permanent Test Name","contactMethod": "Permanent Test Method","contactedMeFirst":    \

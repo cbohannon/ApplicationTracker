@@ -4,26 +4,26 @@
         commitApplicationEdits: function(evt) {
             $(evt.target).parents("tr").find("#btnCommit").prop("disabled", true);
 
-            // TODO: Should I bother to build and pass .json or just pass an array?
-            var id = $(evt.target).parents("tr").find("td:eq(0)").text();
+            var row = $(evt.target).parents("tr");
+            var id = row.find("td:eq(0)").text();
 
-            // Get all the data in the row except for the "id"
-            var tableData = [];
-            tableData.push("{" + "\"company\":" + "\"" + $(evt.target).parents("tr").find("td:eq(1)").text() + "\"");
-            tableData.push("\"position\":" + "\"" + $(evt.target).parents("tr").find("td:eq(2)").text() + "\"");
-            tableData.push("\"location\":" + "\"" + $(evt.target).parents("tr").find("td:eq(3)").text() + "\"");
-            tableData.push("\"dateApplied\":" + "\"" + $(evt.target).parents("tr").find("td:eq(4)").text() + "\"");
-            tableData.push("\"contactName\":" + "\"" + $(evt.target).parents("tr").find("td:eq(5)").text() + "\"");
-            tableData.push("\"contactMethod\":" + "\"" + $(evt.target).parents("tr").find("td:eq(6)").text() + "\"");
-            tableData.push("\"contactedMeFirst\":" + "\"" + $(evt.target).parents("tr").find("td:eq(7)").text() + "\"");
-            tableData.push("\"status\":" + "\"" + $(evt.target).parents("tr").find("td:eq(8)").text() + "\"");
-            tableData.push("\"notes\":" + "\"" + $(evt.target).parents("tr").find("td:eq(9)").text() + "\"" + "}");
+            var payload = {
+                company:          row.find("td:eq(1)").text(),
+                position:         row.find("td:eq(2)").text(),
+                location:         row.find("td:eq(3)").text(),
+                dateApplied:      row.find("td:eq(4)").text(),
+                contactName:      row.find("td:eq(5)").text(),
+                contactMethod:    row.find("td:eq(6)").text(),
+                contactedMeFirst: row.find("td:eq(7)").text(),
+                status:           row.find("td:eq(8)").text(),
+                notes:            row.find("td:eq(9)").text()
+            };
 
             $.ajax({
                 type: "PUT",
                 url: "http://localhost:8181/rest/applications?id=" + id.replace("#", ""),
                 contentType: "application/json; charset=utf-8",
-                data: tableData.toString(),
+                data: JSON.stringify(payload),
                 dataType: "json",
                 cache: false,
                 success: [
@@ -76,14 +76,24 @@
         },
 
         submitApplication: function() {
-            var jsonArray = $("#frmInput").serializeArray();
-            console.log(jsonArray);
+            var payload = {
+                company:          $("#frmInput [name='company']").val(),
+                position:         $("#frmInput [name='position']").val(),
+                location:         $("#frmInput [name='location']").val(),
+                dateApplied:      $("#frmInput [name='dateApplied']").val(),
+                contactName:      $("#frmInput [name='contactName']").val(),
+                contactMethod:    $("#frmInput [name='contactMethod']").val(),
+                contactedMeFirst: $("#frmInput [name='contactedMeFirst']").val(),
+                status:           $("#frmInput [name='status']").val(),
+                notes:            $("#frmInput [name='notes']").val()
+            };
+            console.log(payload);
 
             $.ajax({
                 type: "POST",
                 url: "http://localhost:8181/rest/applications",
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(jsonArray),
+                data: JSON.stringify(payload),
                 dataType: "json",
                 cache: false,
                 success: [
